@@ -13,6 +13,7 @@ typedef struct DotMatrix
     void (*clrPixel)(struct DotMatrix* addr_dotMatrix_t, u8 copy_x, u8 copy_y); // pointer to function that turns a pixel off
 } DotMatrix;
 
-DotMatrix* DotMatrix_init(u8 Copy_u8PortNumber);
+DotMatrix DotMatrix_init();
+
 
 #endif
