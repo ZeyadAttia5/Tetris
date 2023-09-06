@@ -23,13 +23,13 @@ int main()
 	for (u8 i = PIN0; i < PIN15; i++)
 	{
 		GPIO_voidSetPinMode(IOA, i, OUTPUT);
-		GPIO_voidSetPinPuPdConfig(IOA, i, INPUT_PU);
+		GPIO_voidSetPinPuPdConfig(IOA, i, OUTPUT_PP);
 		GPIO_voidSetPinSpeed(IOA, i, OUTPUT_LS);
 
 		GPIO_voidSetPinMode(IOB, i, OUTPUT);
 		GPIO_voidSetPinType(IOB, i, OUTPUT_PP);
 		GPIO_voidSetPinSpeed(IOB, i, OUTPUT_LS);
-//		GPIO_voidSetPinValue(IOB, i, OUTPUT_HIGH);
+		GPIO_voidSetPinValue(IOB, i, OUTPUT_HIGH);
 
 		GPIO_voidSetPinMode(IOC, i, OUTPUT);
 		GPIO_voidSetPinType(IOC, i, OUTPUT_PP);
@@ -38,8 +38,8 @@ int main()
 
 	while (1)
 	{
-		GPIO_voidSetPinValue(IOB, PIN0, OUTPUT_LOW);
 		GPIO_voidSetPinValue(IOA, PIN0, OUTPUT_HIGH);
+		GPIO_voidSetPinValue(IOB, PIN0, OUTPUT_LOW);
 	}
 
 	return 0;
