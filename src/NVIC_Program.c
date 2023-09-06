@@ -1,10 +1,10 @@
 
-#include "BIT_MATH.h"
-#include "STD_TYPES.h"
+#include "LIB/BIT_MATH.h"
+#include "LIB/STD_TYPES.h"
 
-#include "NVIC_Interface.h"
-#include "NVIC_Private.h"
-#include "NVIC_Config.h"
+#include "MCAL/NVIC/NVIC_Interface.h"
+#include "MCAL/NVIC/NVIC_Private.h"
+#include "MCAL/NVIC/NVIC_Config.h"
 
 static u8 Global_u8PriorityConfig = 245;
 /*

@@ -9,7 +9,7 @@
 #ifndef NVIC_INTERFACE_H
 #define NVIC_INTERFACE_H
 
-#include "../../LIB/STD_TYPES.h"
+#include "LIB/STD_TYPES.h"
 
 u8 NVIC_u8EnablePerInt(u8 copy_u8PerID);
 u8 NVIC_u8DisablePerInt(u8 copy_u8PerID);

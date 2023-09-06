@@ -6,12 +6,12 @@
 /* Description: implemntation of the STK driver in the STM32F401CC */
 /*******************************************************************/
 
-#include "BIT_MATH.h"
-#include "STD_TYPES.h"
+#include "LIB/BIT_MATH.h"
+#include "LIB/STD_TYPES.h"
 
-#include "STK_Interface.h"
-#include "STK_Private.h"
-#include "STK_Config.h"
+#include "MCAL/STK/STK_Interface.h"
+#include "MCAL/STK/STK_Private.h"
+#include "MCAL/STK/STK_Config.h"
 
 /* Global Pointer to Function */
 void (*GPF)(void) = NULL;

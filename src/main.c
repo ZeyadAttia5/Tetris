@@ -11,24 +11,36 @@
 
 #include "MCAL/EXTI/EXTI_Interface.h"
 
-
-int main() {
+int main()
+{
 	/*1- Init System Clock*/
 	RCC_voidInitSysClk();
 	/*2- Enable Clk for the periphral GPIOA & GPIOB*/
 	RCC_voidEnablePerClk(AHB1, IOA);
+	RCC_voidEnablePerClk(AHB1, IOB);
+	RCC_voidEnablePerClk(AHB1, IOC);
 	STK_voidInit();
-	for (u8 i = PIN0; i < PIN3; i++) {
-		if (i == EXTI0) {
-			GPIO_voidSetPinMode(IOA, i, INPUT);
-			GPIO_voidSetPinPuPdConfig(IOA, i, INPUT_PU);
-			GPIO_voidSetPinSpeed(IOA, i, OUTPUT_LS);
+	for (u8 i = PIN0; i < PIN15; i++)
+	{
+		GPIO_voidSetPinMode(IOA, i, OUTPUT);
+		GPIO_voidSetPinPuPdConfig(IOA, i, INPUT_PU);
+		GPIO_voidSetPinSpeed(IOA, i, OUTPUT_LS);
 
-		} else {
-			GPIO_voidSetPinMode(IOA, i, OUTPUT);
-			GPIO_voidSetPinType(IOA, i, OUTPUT_PP);
-			GPIO_voidSetPinSpeed(IOA, i, OUTPUT_LS);
-		}
+		GPIO_voidSetPinMode(IOB, i, OUTPUT);
+		GPIO_voidSetPinType(IOB, i, OUTPUT_PP);
+		GPIO_voidSetPinSpeed(IOB, i, OUTPUT_LS);
+//		GPIO_voidSetPinValue(IOB, i, OUTPUT_HIGH);
+
+		GPIO_voidSetPinMode(IOC, i, OUTPUT);
+		GPIO_voidSetPinType(IOC, i, OUTPUT_PP);
+		GPIO_voidSetPinSpeed(IOC, i, OUTPUT_LS);
 	}
+
+	while (1)
+	{
+		GPIO_voidSetPinValue(IOB, PIN0, OUTPUT_LOW);
+		GPIO_voidSetPinValue(IOA, PIN0, OUTPUT_HIGH);
+	}
+
 	return 0;
 }

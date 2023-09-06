@@ -6,11 +6,11 @@
 /* Description: implemntation of the EXTI driver in the STM32F401CC */
 /********************************************************************/
 
-#include "STD_TYPES.h"
-#include "BIT_MATH.h"
-#include "EXTI_Interface.h"
-#include "EXTI_Private.h"
-#include "NVIC_Interface.h"
+#include "LIB/STD_TYPES.h"
+#include "LIB/BIT_MATH.h"
+#include "MCAL/EXTI/EXTI_Interface.h"
+#include "MCAL/EXTI/EXTI_Private.h"
+#include "MCAL/NVIC/NVIC_Interface.h"
 
 
 static EXTI_Callback_t EXTI_Callbacks[16];

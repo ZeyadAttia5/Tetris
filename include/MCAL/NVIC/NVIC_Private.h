@@ -9,7 +9,7 @@
 #ifndef NVIC_PRIVATE_H
 #define NVIC_RPIVATE_H
 
-#include "STD_TYPES.h" 
+#include "LIB/STD_TYPES.h" 
 
 
 typedef struct{

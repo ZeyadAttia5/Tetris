@@ -9,7 +9,7 @@
 #ifndef RCC_INTERFACE_H
 #define RCC_INTERFACE_H
 
-#include "../../LIB/STD_TYPES.h"
+#include "LIB/STD_TYPES.h"
 
 void RCC_voidInitSysClk(void);
 void RCC_voidEnablePerClk(u8 copy_u8BusId, u8 copy_u8PerId);

@@ -5,12 +5,12 @@
 /* Date: 11 AUG 2023                        */
 /* Description: This is the implem. of GPIO */
 /********************************************/
-#include "STD_TYPES.h"
-#include "BIT_MATH.h"
+#include "LIB/STD_TYPES.h"
+#include "LIB/BIT_MATH.h"
 
-#include "GPIO_Interface.h"
-#include "GPIO_Private.h"
-#include "GPIO_Config.h"
+#include "MCAL/GPIO/GPIO_Interface.h"
+#include "MCAL/GPIO/GPIO_Private.h"
+#include "MCAL/GPIO/GPIO_Config.h"
 
 /*****************************************************************/
 /* Func. Name: GPIO_voidSetPinMode                               */
