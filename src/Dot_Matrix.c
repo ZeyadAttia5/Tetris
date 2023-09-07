@@ -6,30 +6,37 @@
 #include "HAL/Dot_Matrix/Dot_Matrix_config.h"
 #include "HAL/Dot_Matrix/Dot_Matrix_Interface.h"
 
-//#include <malloc.h>
+// #include <malloc.h>
 
-void setPixel(DotMatrix *addr_dotMatrix_t, u8 copy_x, u8 copy_y) {
-	if (copy_x < MAX_ROWS && copy_y < MAX_COLS) {
-		SET_BIT(addr_dotMatrix_t->buffer[copy_y], copy_x);
+void setPixel(u8 *buffer, u8 copy_x, u8 copy_y)
+{
+	if (copy_x < MAX_ROWS && copy_y < MAX_COLS)
+	{
+		SET_BIT(buffer[copy_y], copy_x);
 	}
 }
-void clrPixel(DotMatrix *addr_dotMatrix_t, u8 copy_x, u8 copy_y) {
-	if (copy_x < MAX_ROWS && copy_y < MAX_COLS) {
-		CLR_BIT(addr_dotMatrix_t->buffer[copy_y], copy_x);
+void clrPixel(u8 *buffer, u8 copy_x, u8 copy_y)
+{
+	if (copy_x < MAX_ROWS && copy_y < MAX_COLS)
+	{
+		CLR_BIT(buffer[copy_y], copy_x);
 	}
 }
 
-DotMatrix DotMatrix_init() {
-	DotMatrix addr_dotMatrix; // = (DotMatrix *)malloc(sizeof(DotMatrix));
+DotMatrix DotMatrix_init()
+{
+	DotMatrix Copy_DotMatrix; // = (DotMatrix *)malloc(sizeof(DotMatrix));
 
-//    if (addr_dotMatrix == NULL)
-//    {
-//        // Handle memory allocation error
-//        return NULL;
-//    }
+	//    if (addr_dotMatrix == NULL)
+	//    {
+	//        // Handle memory allocation error
+	//        return NULL;
+	//    }
 
-    addr_dotMatrix.setPixel = setPixel;
-    addr_dotMatrix.clrPixel = clrPixel;
+	Copy_DotMatrix.setPixel = setPixel;
+	Copy_DotMatrix.clrPixel = clrPixel;
+	Copy_DotMatrix.copy_u8RowPort = DOTMAT_ROW_PORT;
+	Copy_DotMatrix.copy_u8ColPort = DOTMAT_COL_PORT;
 
 	/* Set mode to output */
 	GPIO_voidSetPinMode(DOTMAT_ROW0, OUTPUT);
@@ -88,5 +95,25 @@ DotMatrix DotMatrix_init() {
 	GPIO_voidSetPinSpeed(DOTMAT_COL6, OUTPUT_HS);
 	GPIO_voidSetPinSpeed(DOTMAT_COL7, OUTPUT_HS);
 
-    return addr_dotMatrix;
+	return Copy_DotMatrix;
+}
+
+void matrix_update(DotMatrix matrix)
+{
+	for (u8 row = 0; row < MAX_ROWS; row++)
+	{
+		for (u8 col = 0; col < MAX_COLS; col++)
+		{
+			if (GET_BIT(matrix.buffer[row], col) == 1)
+			{
+				GPIO_voidSetPinValue(matrix.copy_u8RowPort, row, OUTPUT_HIGH);
+				GPIO_voidSetPinValue(matrix.copy_u8ColPort, col, OUTPUT_LOW);
+			}
+			else
+			{
+				GPIO_voidSetPinValue(matrix.copy_u8RowPort, row, OUTPUT_LOW);
+				GPIO_voidSetPinValue(matrix.copy_u8ColPort, col, OUTPUT_LOW);
+			}
+		}
+	}
 }

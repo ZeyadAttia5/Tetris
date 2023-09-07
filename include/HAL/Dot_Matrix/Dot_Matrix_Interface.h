@@ -5,15 +5,18 @@
 #include "LIB/STD_TYPES.h"
 #include "LIB/BIT_MATH.h"
 
+#include "HAL/Dot_Matrix/Dot_Matrix_config.h"
+
 typedef struct DotMatrix
 {
-    u8 copy_u8PortNumber;
+    u8 copy_u8RowPort;
+    u8 copy_u8ColPort;
+    void (*setPixel)(u8* buffer, u8 copy_x, u8 copy_y); // pointer to function that turns a pixel on
+    void (*clrPixel)(u8* buffer, u8 copy_x, u8 copy_y); // pointer to function that turns a pixel off
     u8 buffer[MAX_ROWS]; // Buffer to store the display content
-    void (*setPixel)(struct DotMatrix* addr_dotMatrix_t, u8 copy_x, u8 copy_y); // pointer to function that turns a pixel on
-    void (*clrPixel)(struct DotMatrix* addr_dotMatrix_t, u8 copy_x, u8 copy_y); // pointer to function that turns a pixel off
 } DotMatrix;
 
 DotMatrix DotMatrix_init();
-
+void matrix_update(DotMatrix matrix);
 
 #endif
