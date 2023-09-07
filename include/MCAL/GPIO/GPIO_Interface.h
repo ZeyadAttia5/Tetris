@@ -10,13 +10,13 @@
 #ifndef GPIO_INTERFACE_H
 #define GPIO_INTERFACE_H
 
-#include "../../LIB/STD_TYPES.h"
-#include "../../LIB/BIT_MATH.h"
+#include "LIB/STD_TYPES.h"
+#include "LIB/BIT_MATH.h"
 
 void GPIO_voidSetPinMode(u8 copy_u8portId, u8 copy_u8PinId, u8 copy_u8Mode);
 void GPIO_voidSetPinType(u8 copy_u8portId, u8 copy_u8PinId, u8 copy_u8Type);
 void GPIO_voidSetPinSpeed(u8 copy_u8portId, u8 copy_u8PinId, u8 copy_u8Speed);
-void GPIO_voidSetPuPdConfig(u8 copy_u8portId, u8 copy_u8PinId, u8 copy_u8PuPd);
+void GPIO_voidSetPinPuPdConfig(u8 copy_u8portId, u8 copy_u8PinId, u8 copy_u8PuPd);
 void GPIO_voidSetDirectAcces(u8 copy_u8portId, u8 copy_u8PinId, u8 copy_u8SetReset);
 void GPIO_voidSetPinValue(u8 copy_u8portId, u8 copy_u8PinId, u8 copy_u8Value);
 void GPIO_voidSetPortValue(u8 copy_u8portId, u32 copy_u32Value);

@@ -1,15 +1,9 @@
-#include "LIB/STD_TYPES.h"
-#include "LIB/BIT_MATH.h"
 
 #include "MCAL/RCC/RCC_Interface.h"
 
 #include "MCAL/GPIO/GPIO_Interface.h"
 
 #include "MCAL/STK/STK_Interface.h"
-
-#include "MCAL/NVIC/NVIC_Interface.h"
-
-#include "MCAL/EXTI/EXTI_Interface.h"
 
 int main()
 {
