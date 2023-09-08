@@ -2,29 +2,39 @@
 #include "LIB/STD_TYPES.h"
 
 #include "MCAL/GPIO/GPIO_Interface.h"
+#include "MCAL/STK/STK_Interface.h"
 
 #include "HAL/Dot_Matrix/Dot_Matrix_config.h"
 #include "HAL/Dot_Matrix/Dot_Matrix_Interface.h"
 
 // #include <malloc.h>
+static void matrix_set_pixel(u8 row, u8 col);
+static void matrix_clr_pixel(u8 row, u8 col);
 
-void setPixel(u8 *buffer, u8 copy_x, u8 copy_y)
-{
-	if (copy_x < MAX_ROWS && copy_y < MAX_COLS)
-	{
-		SET_BIT(buffer[copy_y], copy_x);
+void setPixel(u8 *buffer, u8 copy_x, u8 copy_y) {
+	if (copy_x < DOTMAT_MAX_ROWS && copy_y < DOTMAT_MAX_COLS) {
+		SET_BIT(buffer[copy_x], copy_y);
 	}
 }
-void clrPixel(u8 *buffer, u8 copy_x, u8 copy_y)
-{
-	if (copy_x < MAX_ROWS && copy_y < MAX_COLS)
-	{
-		CLR_BIT(buffer[copy_y], copy_x);
+void clrPixel(u8 *buffer, u8 copy_x, u8 copy_y) {
+	if (copy_x < DOTMAT_MAX_ROWS && copy_y < DOTMAT_MAX_COLS) {
+		CLR_BIT(buffer[copy_x], copy_y);
 	}
 }
 
-DotMatrix DotMatrix_init()
-{
+void setRow(u8 *buffer, u8 copy_x) {
+	if (copy_x < DOTMAT_MAX_ROWS) {
+		ASSIGN_REG(buffer[copy_x], 0xFF);
+	}
+}
+
+void clrRow(u8 *buffer, u8 copy_x) {
+	if (copy_x < DOTMAT_MAX_ROWS) {
+		ASSIGN_REG(buffer[copy_x], 0x00);
+	}
+}
+
+DotMatrix DotMatrix_init() {
 	DotMatrix Copy_DotMatrix; // = (DotMatrix *)malloc(sizeof(DotMatrix));
 
 	//    if (addr_dotMatrix == NULL)
@@ -35,8 +45,13 @@ DotMatrix DotMatrix_init()
 
 	Copy_DotMatrix.setPixel = setPixel;
 	Copy_DotMatrix.clrPixel = clrPixel;
+	Copy_DotMatrix.setRow = setRow;
+	Copy_DotMatrix.clrRow = clrRow;
 	Copy_DotMatrix.copy_u8RowPort = DOTMAT_ROW_PORT;
 	Copy_DotMatrix.copy_u8ColPort = DOTMAT_COL_PORT;
+	for (u8 i = 0; i < DOTMAT_MAX_ROWS; i++) {
+		Copy_DotMatrix.buffer[i] = 0; // initialize the buffer to Zero
+	}
 
 	/* Set mode to output */
 	GPIO_voidSetPinMode(DOTMAT_ROW0, OUTPUT);
@@ -98,22 +113,25 @@ DotMatrix DotMatrix_init()
 	return Copy_DotMatrix;
 }
 
-void matrix_update(DotMatrix matrix)
-{
-	for (u8 row = 0; row < MAX_ROWS; row++)
-	{
-		for (u8 col = 0; col < MAX_COLS; col++)
-		{
-			if (GET_BIT(matrix.buffer[row], col) == 1)
-			{
-				GPIO_voidSetPinValue(matrix.copy_u8RowPort, row, OUTPUT_HIGH);
-				GPIO_voidSetPinValue(matrix.copy_u8ColPort, col, OUTPUT_LOW);
+void matrix_update(DotMatrix matrix) {
+
+	for (u8 row = 0; row < DOTMAT_MAX_ROWS; row++) {
+		for (u8 col = 0; col < DOTMAT_MAX_COLS; ++col) {
+			if (1 == GET_BIT(matrix.buffer[row], col)) {
+				matrix_set_pixel(row,col);
+				STK_voidSetBusyWait(250);
 			}
-			else
-			{
-				GPIO_voidSetPinValue(matrix.copy_u8RowPort, row, OUTPUT_LOW);
-				GPIO_voidSetPinValue(matrix.copy_u8ColPort, col, OUTPUT_LOW);
-			}
+			matrix_clr_pixel(row,col);
 		}
 	}
+}
+
+static void matrix_set_pixel(u8 row, u8 col) {
+	GPIO_voidSetPinValue(DOTMAT_ROW_PORT, row, OUTPUT_HIGH);
+	GPIO_voidSetPinValue(DOTMAT_COL_PORT, col, OUTPUT_LOW);
+}
+
+static void matrix_clr_pixel(u8 row, u8 col) {
+	GPIO_voidSetPinValue(DOTMAT_ROW_PORT, row, OUTPUT_LOW);
+	GPIO_voidSetPinValue(DOTMAT_COL_PORT, col, OUTPUT_HIGH);
 }

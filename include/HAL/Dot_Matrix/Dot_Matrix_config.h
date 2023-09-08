@@ -1,8 +1,8 @@
 #ifndef DOT_MATRIX_CONFIG
 #define DOT_MATRIX_CONFIG
 
-#define MAX_ROWS 8
-#define MAX_COLS 8
+#define DOTMAT_MAX_ROWS 8
+#define DOTMAT_MAX_COLS 8
 
 /*Please write row can column ports*/
 #define DOTMAT_ROW_PORT IOA
