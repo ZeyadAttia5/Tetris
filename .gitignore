@@ -5,5 +5,3 @@ system
 .project
 .cproject
 /Debug/
-src/Dot_Matrix.c
-/include/HAL/Dot_Matrix/
