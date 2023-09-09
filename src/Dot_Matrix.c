@@ -83,10 +83,11 @@ u8 movePixelDown(u8 *buffer, u8 copy_x, u8 copy_y)
 		else
 		{
 			setPixel(buffer, copy_x + 1, copy_y);
+			clrPixel(buffer, copy_x, copy_y);
 			LOC_ErrMovedPixel = TRUE;
 		}
-		return LOC_ErrMovedPixel;
 	}
+	return LOC_ErrMovedPixel;
 }
 u8 movePixelLeft(u8 *buffer, u8 copy_x, u8 copy_y)
 {
@@ -106,6 +107,8 @@ u8 movePixelLeft(u8 *buffer, u8 copy_x, u8 copy_y)
 		else
 		{
 			setPixel(buffer, copy_x, copy_y - 1);
+			clrPixel(buffer, copy_x, copy_y);
+			LOC_ErrMovedPixel = TRUE;
 		}
 	}
 	return LOC_ErrMovedPixel;
@@ -128,6 +131,7 @@ u8 movePixelRight(u8 *buffer, u8 copy_x, u8 copy_y)
 		else
 		{
 			setPixel(buffer, copy_x, copy_y + 1);
+			clrPixel(buffer, copy_x, copy_y);
 			LOC_ErrMovedPixel = TRUE;
 		}
 	}

@@ -30,7 +30,7 @@ void RCC_voidInitSysClk(void) {
 	CLR_BIT(RCC_CFGR, SW1);
 
 //    /* 3- AHB - Prescaled by 2 */
-//    SET_BIT(RCC_CFGR, 7);
+    SET_BIT(RCC_CFGR, 7);
 
 #elif SYS_CLK_SRC == HSE
 
