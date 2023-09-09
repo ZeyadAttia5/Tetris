@@ -44,13 +44,13 @@ void clrRow(u8 *buffer, u8 copy_x)
 /* control of pixels */
 
 /* movement of pixels */
-u8 movePixelUp(u8 *buffer, u8 copy_x, u8 copy_y)
+s8 movePixelUp(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 {
-	u8 LOC_ErrMovedPixel = OutOfBoundsException;
-	if (copy_x < 0 || copy_y < 0)
+	s8 LOC_ErrMovedPixel = OutOfBoundsException;
+	if (copy_x == 0 || copy_y >= DOTMAT_MAX_COLS || copy_x-1 >= DOTMAT_MAX_ROWS)
 	{
 		// out of bounds
-		u8 LOC_ErrMovedPixel = OutOfBoundsException;
+		LOC_ErrMovedPixel = OutOfBoundsException;
 	}
 	else
 	{
@@ -62,14 +62,25 @@ u8 movePixelUp(u8 *buffer, u8 copy_x, u8 copy_y)
 		{
 			setPixel(buffer, copy_x - 1, copy_y);
 			LOC_ErrMovedPixel = TRUE;
+			switch (copy_u8Mode)
+			{
+			case ON_MOVE_CLEAR_OLD:
+				clrPixel(buffer, copy_x, copy_y);
+				break;
+			case ON_MOVE_SET_OLD:
+				setPixel(buffer, copy_x, copy_y);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 	return LOC_ErrMovedPixel;
 }
-u8 movePixelDown(u8 *buffer, u8 copy_x, u8 copy_y)
+s8 movePixelDown(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 {
-	u8 LOC_ErrMovedPixel = OutOfBoundsException;
-	if (copy_x > DOTMAT_MAX_ROWS || copy_y > DOTMAT_MAX_COLS)
+	s8 LOC_ErrMovedPixel = OutOfBoundsException;
+	if (copy_x+1 >= DOTMAT_MAX_ROWS || copy_y >= DOTMAT_MAX_COLS)
 	{
 		// out of bounds
 		LOC_ErrMovedPixel = OutOfBoundsException;
@@ -83,62 +94,91 @@ u8 movePixelDown(u8 *buffer, u8 copy_x, u8 copy_y)
 		else
 		{
 			setPixel(buffer, copy_x + 1, copy_y);
-			clrPixel(buffer, copy_x, copy_y);
 			LOC_ErrMovedPixel = TRUE;
+			switch (copy_u8Mode)
+			{
+			case ON_MOVE_CLEAR_OLD:
+				clrPixel(buffer, copy_x, copy_y);
+				break;
+			case ON_MOVE_SET_OLD:
+				setPixel(buffer, copy_x, copy_y);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 	return LOC_ErrMovedPixel;
 }
-u8 movePixelLeft(u8 *buffer, u8 copy_x, u8 copy_y)
+s8 movePixelRight(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 {
-	u8 LOC_ErrMovedPixel = OutOfBoundsException;
+	s8 LOC_ErrMovedPixel = OutOfBoundsException;
 
-	if (copy_x > DOTMAT_MAX_ROWS || copy_y < 0)
+	if (copy_x >= DOTMAT_MAX_ROWS || copy_y-1 >= DOTMAT_MAX_COLS)
 	{
 		// out of bounds
 		LOC_ErrMovedPixel = OutOfBoundsException;
 	}
 	else
 	{
-		if (GET_BIT(buffer[copy_x], copy_y - 1)) // if bit to the left is 1, collision detected
+		if (GET_BIT(buffer[copy_x], copy_y - 1)) // if bit to the right is 1, collision detected
 		{
 			LOC_ErrMovedPixel = CollisionDetectedException;
 		}
 		else
 		{
 			setPixel(buffer, copy_x, copy_y - 1);
-			clrPixel(buffer, copy_x, copy_y);
 			LOC_ErrMovedPixel = TRUE;
+			switch (copy_u8Mode)
+			{
+			case ON_MOVE_CLEAR_OLD:
+				clrPixel(buffer, copy_x, copy_y);
+				break;
+			case ON_MOVE_SET_OLD:
+				setPixel(buffer, copy_x, copy_y);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 	return LOC_ErrMovedPixel;
 	// LSHIFT_REG(buffer[copy_x], 1);
 }
-u8 movePixelRight(u8 *buffer, u8 copy_x, u8 copy_y)
+s8 movePixelLeft(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 {
-	u8 LOC_ErrMovedPixel = OutOfBoundsException;
-	if (copy_x > DOTMAT_MAX_ROWS || copy_y > DOTMAT_MAX_COLS)
+	s8 LOC_ErrMovedPixel = OutOfBoundsException;
+	if (copy_x >= DOTMAT_MAX_ROWS || copy_y+1 >= DOTMAT_MAX_COLS)
 	{
 		// out of bounds return false
 		LOC_ErrMovedPixel = OutOfBoundsException;
 	}
 	else
 	{
-		if (GET_BIT(buffer[copy_x], copy_y + 1)) // if bit to the right is 1, collision detected
+		if (GET_BIT(buffer[copy_x], copy_y + 1)) // if bit to the Left is 1, collision detected
 		{
 			LOC_ErrMovedPixel = CollisionDetectedException;
 		}
 		else
 		{
 			setPixel(buffer, copy_x, copy_y + 1);
-			clrPixel(buffer, copy_x, copy_y);
 			LOC_ErrMovedPixel = TRUE;
+			switch (copy_u8Mode)
+			{
+			case ON_MOVE_CLEAR_OLD:
+				clrPixel(buffer, copy_x, copy_y);
+				break;
+			case ON_MOVE_SET_OLD:
+				setPixel(buffer, copy_x, copy_y);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 	return LOC_ErrMovedPixel;
 }
 /* movement of pixels */
-
 
 DotMatrix DotMatrix_init()
 {
