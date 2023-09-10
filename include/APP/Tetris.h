@@ -16,12 +16,7 @@
 #define TETRIS_SHAPE_Z 6
 #define TETRIS_SHAPE_COUNT 7
 
-typedef struct Tetris
-{
-    DotMatrix board;
 
-    s8 (*drawShape)(struct Tetris *board, u8 copy_u8X, u8 copy_u8Y);
-} Tetris;
 
 typedef struct
 {
@@ -31,6 +26,15 @@ typedef struct
     u8 rotation : 2; // 0 to 3, inclusive
     // total bits: 11 = u16
 } Block;
+
+typedef struct Tetris
+{
+    DotMatrix board;
+
+    s8 (*drawShape)(struct Tetris *board, u8 copy_u8X, u8 copy_u8Y);
+    Block active_block;
+} Tetris;
+
 
 /******************************************************************/
 /* Func. Name: Tetris_drawShape                                   */

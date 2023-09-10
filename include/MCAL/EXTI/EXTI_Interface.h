@@ -24,15 +24,18 @@
 #define EXTI14  14
 #define EXTI15	15
 
+#define EXTI5_9     23
+#define EXTI10_15   40
+
 typedef void (*EXTI_Callback_t)(void);
 
 
-void EXTI_voidInit();
+void EXTI_voidInit(u8 copy_u8LineID);
 void EXTI_voidEXTILineEnable(u8);
 void EXTI_voidEXTILineDisable(u8);
-void EXTI_voidSetSenseControl(u8 copy_u8SenseControl, u8 copy_u8Line);
-void EXTI_voidSetEXTIPinConfig(u8 copy_u8PortId, u8 copy_u8Line);
-void EXTI_voidSetEXTIConfig(u8 copy_u8PortId, u8 copy_u8Line);
+void EXTI_voidSetSenseControl(u8 copy_u8Line, u8 copy_u8SenseControl);
+//void EXTI_voidSetEXTIPinConfig(u8 copy_u8PortId, u8 copy_u8Line);
+//void EXTI_voidSetEXTIConfig(u8 copy_u8PortId, u8 copy_u8Line);
 void EXTI_voidClrPendingFlag(u8);
 void EXTI_voidSetCallBack(EXTI_Callback_t callback, u8 copy_u8LineId);
 #endif

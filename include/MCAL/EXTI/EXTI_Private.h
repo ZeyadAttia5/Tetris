@@ -40,8 +40,6 @@ typedef struct EXTI_Private
 #define private_EXTI14 14
 #define private_EXTI15 15
 
-#define EXTI5_9     23
-#define EXTI10_15   40
 
 #define EXTI ((volatile EXTI_t *)(Base_address))
 

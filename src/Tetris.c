@@ -28,9 +28,11 @@ s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
     new_block.center_y = copy_u8Y;
     new_block.type = LOC_s8BlockNum;
     LOC_s8BlockNum++;
-
+    
     // TODO make rotation random
     new_block.rotation = TETRIS_ROTATION_0;
+
+    board->active_block = new_block;
 
     switch (new_block.type)
     {
@@ -74,7 +76,7 @@ static s8 Tetris_draw_I(DotMatrix *board, const Block new_block)
     case TETRIS_ROTATION_0:
         for (u8 movements = 0; movements < MAX_PIXELS_PER_BLOCK - 1; movements++)
         {
-            LOC_u8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x++, LOC_u8Center_y, ON_MOVE_SET_OLD);
+            LOC_u8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x--, LOC_u8Center_y, ON_MOVE_SET_OLD);
             if (LOC_u8DrawStatus != TRUE)
             {
                 break;
@@ -84,7 +86,7 @@ static s8 Tetris_draw_I(DotMatrix *board, const Block new_block)
     case TETRIS_ROTATION_90:
         for (u8 i = 0; i < MAX_PIXELS_PER_BLOCK - 1; i++)
         {
-            LOC_u8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y--, ON_MOVE_SET_OLD);
+            LOC_u8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y++, ON_MOVE_SET_OLD);
             if (LOC_u8DrawStatus != TRUE)
             {
                 board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
@@ -140,7 +142,7 @@ static s8 Tetris_draw_J(DotMatrix *board, Block new_block)
         board->clrPixel(board->buffer, new_block.center_x, new_block.center_y + 1);
         return LOC_u8DrawStatus;
     }
-    new_block.center_x--;
+    new_block.center_x++;
 
     LOC_u8DrawStatus = board->movePixelUp(board->buffer, new_block.center_x, new_block.center_y, ON_MOVE_SET_OLD);
     if (LOC_u8DrawStatus != TRUE)
@@ -157,8 +159,8 @@ static s8 Tetris_draw_L(DotMatrix *board, Block new_block)
 {
     s8 LOC_s8DrawStatus = TRUE;
     LOC_s8DrawStatus = board->movePixelRight(board->buffer, new_block.center_x, new_block.center_y, ON_MOVE_SET_OLD);
-    LOC_s8DrawStatus = board->movePixelUp(board->buffer, new_block.center_x--, new_block.center_y, ON_MOVE_SET_OLD);
-    LOC_s8DrawStatus = board->movePixelUp(board->buffer, new_block.center_x--, new_block.center_y, ON_MOVE_SET_OLD);
+    LOC_s8DrawStatus = board->movePixelUp(board->buffer, new_block.center_x++, new_block.center_y, ON_MOVE_SET_OLD);
+    LOC_s8DrawStatus = board->movePixelUp(board->buffer, new_block.center_x++, new_block.center_y, ON_MOVE_SET_OLD);
 
     return LOC_s8DrawStatus;
 }

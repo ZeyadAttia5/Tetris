@@ -48,7 +48,7 @@ void STK_voidSetBusyWait(u32 Copy_u32Ticks)
     SET_BIT(STK_CTRL, 0);
 
     // 3- wait for flag
-    while (GET_BIT(STK_CTRL, 16) != 1)
+    while (GET_BIT(STK_CTRL, 16) != 1 && STK_VAL !=0)
     {
     }
 

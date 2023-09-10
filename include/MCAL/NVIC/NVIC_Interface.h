@@ -19,8 +19,8 @@ void NVIC_voidSetPriorityConfig(u8 copy_u8PriortyConfig);
 void NVIC_voidSetPerPriority(u8 copy_u8PerId, u8 copy_u8GroupId, u8 copy_u8SubGrouPId);
 
 /* error codes */
-#define SUCCESS 0
-#define FAIL 1
+#define FAIL 0
+#define SUCCESS 1
 
 // base address of SCB is 0xE000ED00
 #define SCB_AIRCR *((volatile u32 *)0xE000ED00)
