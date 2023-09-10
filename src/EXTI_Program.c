@@ -13,7 +13,8 @@
 #include "MCAL/NVIC/NVIC_Interface.h"
 #include "MCAL/GPIO/GPIO_Interface.h"
 
-static EXTI_Callback_t EXTI_Callbacks[16];
+
+static EXTI_Callback_t EXTI_Callbacks[EXTI_MAX_LINE_NUMBERS];
 
 void EXTI_voidInit(u8 copy_u8LineID) {
 

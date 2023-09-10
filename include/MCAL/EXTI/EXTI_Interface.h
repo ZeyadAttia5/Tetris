@@ -23,6 +23,7 @@
 #define EXTI13  13
 #define EXTI14  14
 #define EXTI15	15
+#define EXTI_MAX_LINE_NUMBERS 16
 
 #define EXTI5_9     23
 #define EXTI10_15   40
