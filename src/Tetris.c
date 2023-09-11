@@ -133,14 +133,11 @@ static s8 Tetris_draw_I(DotMatrix *board, const Block new_block) {
 	case TETRIS_ROTATION_0:
 		for (; movements < MAX_PIXELS_PER_BLOCK - 1; movements++) {
 			LOC_s8DrawStatus = board->movePixelDown(board->buffer,LOC_u8Center_x--, LOC_u8Center_y, ON_MOVE_SET_OLD);
-			if (LOC_s8DrawStatus != TRUE) {
-				break;
-			}
 		}
 		if (LOC_s8DrawStatus != TRUE) {
 			if (LOC_s8DrawStatus == OutOfBoundsException)
 				LOC_u8Center_x = 0;
-			for (u8 reverse = movements; reverse < movements; reverse++) {
+			for (u8 reverse = 0; reverse < movements; reverse++) {
 				board->clrPixel(board->buffer, LOC_u8Center_x++,
 						LOC_u8Center_y);
 			}
