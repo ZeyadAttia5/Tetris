@@ -10,8 +10,8 @@
 #define CollisionDetectedException 0
 #define TRUE 1
 
-#define ON_MOVE_CLEAR_OLD   0
-#define ON_MOVE_SET_OLD     1 
+#define ON_MOVE_CLEAR_OLD 0
+#define ON_MOVE_SET_OLD 1
 
 typedef struct DotMatrix
 {
@@ -22,6 +22,8 @@ typedef struct DotMatrix
     void (*clrPixel)(u8 *buffer, u8 copy_x, u8 copy_y); // pointer to function that turns a pixel off
     void (*setRow)(u8 *buffer, u8 copy_x);              // pointer to function that turns a pixel off
     void (*clrRow)(u8 *buffer, u8 copy_x);              // pointer to function that turns a pixel off
+
+    u8 (*isPixelEmpty)(u8 *buffer, u8 copy_x, u8 copy_y); // pointer to function that moves a pixel right (y+1)
 
     s8 (*movePixelUp)(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8OnMoveAction);    // pointer to function that moves a pixel up    (x-1)
     s8 (*movePixelDown)(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8OnMoveAction);  // pointer to function that moves a pixel down  (x+1)
