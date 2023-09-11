@@ -146,29 +146,27 @@ static s8 Tetris_draw_I(DotMatrix *board, const Block new_block) {
 	case TETRIS_ROTATION_90:
 		for (movements = 0; movements < MAX_PIXELS_PER_BLOCK - 1; movements++) {
 			LOC_s8DrawStatus = board->movePixelLeft(board->buffer,
-					LOC_u8Center_x, LOC_u8Center_y++, ON_MOVE_SET_OLD);
-			if (LOC_s8DrawStatus != TRUE) {
-				break;
-			}
+					LOC_u8Center_x, LOC_u8Center_y--, ON_MOVE_SET_OLD);
 		}
 		if (LOC_s8DrawStatus != TRUE) {
-			for (; movements > 0; movements--) {
+			if (LOC_s8DrawStatus == OutOfBoundsException)
+				LOC_u8Center_y = 0;
+			for (u8 reverse = 0; reverse < movements; reverse++) {
 				board->clrPixel(board->buffer, LOC_u8Center_x,
-						LOC_u8Center_y--);
+						LOC_u8Center_y++);
 			}
 		}
 		break;
 	case TETRIS_ROTATION_180:
 		for (movements = 0; movements < MAX_PIXELS_PER_BLOCK - 1; movements++) {
 			LOC_s8DrawStatus = board->movePixelUp(board->buffer,
-					LOC_u8Center_x--, LOC_u8Center_y, ON_MOVE_SET_OLD);
-			if (LOC_s8DrawStatus != TRUE) {
-				break;
-			}
+					LOC_u8Center_x++, LOC_u8Center_y, ON_MOVE_SET_OLD);
 		}
 		if (LOC_s8DrawStatus != TRUE) {
-			for (; movements > 0; movements--) {
-				board->clrPixel(board->buffer, LOC_u8Center_x++,
+			if (LOC_s8DrawStatus == OutOfBoundsException)
+				LOC_u8Center_x = 0;
+			for (u8 reverse = 0; reverse < movements; reverse++) {
+				board->clrPixel(board->buffer, LOC_u8Center_x--,
 						LOC_u8Center_y);
 			}
 		}
@@ -176,15 +174,14 @@ static s8 Tetris_draw_I(DotMatrix *board, const Block new_block) {
 	case TETRIS_ROTATION_270:
 		for (movements = 0; movements < MAX_PIXELS_PER_BLOCK - 1; movements++) {
 			LOC_s8DrawStatus = board->movePixelRight(board->buffer,
-					LOC_u8Center_x, LOC_u8Center_y--, ON_MOVE_SET_OLD);
-			if (LOC_s8DrawStatus != TRUE) {
-				break;
-			}
+					LOC_u8Center_x, LOC_u8Center_y++, ON_MOVE_SET_OLD);
 		}
 		if (LOC_s8DrawStatus != TRUE) {
-			for (; movements > 0; movements--) {
+			if (LOC_s8DrawStatus == OutOfBoundsException)
+				LOC_u8Center_y = 0;
+			for (u8 reverse = 0; reverse < movements; reverse++) {
 				board->clrPixel(board->buffer, LOC_u8Center_x,
-						LOC_u8Center_y++);
+						LOC_u8Center_y--);
 			}
 		}
 		break;
