@@ -30,7 +30,7 @@ int main() {
 	/* Test system is working */
 	//	GPIO_voidSetPinValue(IOA, PIN9, OUTPUT_HIGH);
 	game_controller = Tetris_init();
-	game_controller.drawShape(&game_controller, 3, 2);
+	game_controller.drawShape(&game_controller, 4, 6);
 
 //	 game_controller.drawShape(&game_controller, 0, 6);
 //	 game_controller.drawShape(&game_controller, 3, 3);

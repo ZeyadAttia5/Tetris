@@ -139,7 +139,7 @@ s8 movePixelRight(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 	}
 	else
 	{
-		if (GET_BIT(buffer[copy_x + 1], copy_y + 1)) // if bit to the right is 1, collision detected
+		if (GET_BIT(buffer[copy_x], copy_y + 1)) // if bit to the right is 1, collision detected
 		{
 			LOC_ErrMovedPixel = CollisionDetectedException;
 		}

@@ -178,10 +178,10 @@ static s8 Tetris_draw_I(DotMatrix *board, const Block new_block) {
 		}
 		if (LOC_s8DrawStatus != TRUE) {
 			if (LOC_s8DrawStatus == OutOfBoundsException)
-				LOC_u8Center_y = 0;
+				LOC_u8Center_y = new_block.center_y;
 			for (u8 reverse = 0; reverse < movements; reverse++) {
 				board->clrPixel(board->buffer, LOC_u8Center_x,
-						LOC_u8Center_y--);
+						LOC_u8Center_y++);
 			}
 		}
 		break;
