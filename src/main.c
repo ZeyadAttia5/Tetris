@@ -31,16 +31,16 @@ int main() {
 	//	GPIO_voidSetPinValue(IOA, PIN9, OUTPUT_HIGH);
 //	DotMatrix matrix = DotMatrix_init();
 	game_controller = Tetris_init();
-	game_controller.drawShape(&game_controller, 0, 0);
+	game_controller.drawShape(&game_controller, 1, 0);
 
 	// game_controller.drawShape(&game_controller, 0, 6);
 	// game_controller.drawShape(&game_controller, 3, 3);
 
-	// DotMatrix matrix = DotMatrix_init();
 	// u8 *row = &matrix.copy_u8RowPort;
 	// DotMatrix *matrix2 = container_of(row, DotMatrix, copy_u8RowPort);
 
-//	matrix.setPixel(matrix.buffer, 0, 0);
+//	matrix.setPixel(matrix.buffer, 1, 0);
+
 	while (1) {
 		matrix_update(game_controller.board);
 //		matrix_update(matrix);

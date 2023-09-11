@@ -105,7 +105,7 @@ s8 movePixelDown(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 	}
 	else
 	{
-		if (GET_BIT(buffer[copy_x + 1], copy_y) == 1) // if bit down is 1, collision detected
+		if (GET_BIT(buffer[copy_x - 1], copy_y) == 1) // if bit down is 1, collision detected
 		{
 			LOC_ErrMovedPixel = CollisionDetectedException;
 		}
@@ -166,7 +166,7 @@ s8 movePixelRight(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 s8 movePixelLeft(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 {
 	s8 LOC_ErrMovedPixel = OutOfBoundsException;
-	if (copy_x >= DOTMAT_MAX_ROWS || copy_y - 1 >= DOTMAT_MAX_COLS)
+	if (copy_x >= DOTMAT_MAX_ROWS || copy_y - 1 >= DOTMAT_MAX_COLS || copy_y == 0)
 	{
 		// out of bounds return false
 		LOC_ErrMovedPixel = OutOfBoundsException;
