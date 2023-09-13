@@ -17,7 +17,6 @@
 #define TETRIS_ROTATIONS_COUNT 4
 
 extern Tetris game_controller;
-
 s8 Tetris_rotate(void);
 static s8 Tetris_drawShape2(void);
 static s8 Tetris_draw_I(DotMatrix *board, Block new_block);
@@ -305,9 +304,9 @@ Tetris Tetris_init(void)
 	EXTI_voidInit(EXTI9);
 	EXTI_voidInit(EXTI10);
 	NVIC_voidSetPriorityConfig(G0_SG16);
-	EXTI_voidSetCallBack(Tetris_rotate, EXTI9);
-	EXTI_voidSetCallBack(Tetris_moveBlockRight, EXTI9);
+	EXTI_voidSetCallBack(Tetris_moveBlockRight, EXTI8);
 	EXTI_voidSetCallBack(Tetris_moveBlockLeft, EXTI9);
+	EXTI_voidSetCallBack(Tetris_rotate, EXTI10);
 	return game_controller;
 }
 
@@ -414,7 +413,36 @@ s8 Tetris_rotate(void)
 
 s8 Tetris_moveBlockRight()
 {
+	s8 LOC_u8RotationErr = 1;
+
+	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
+
+	++game_controller.active_block.center_y; // there are only 4 rotations:   0� -> 360�
+	LOC_u8RotationErr = Tetris_drawShape2();
+
+	// if there was an error rotating, draw the block with its old rotation.
+	if (LOC_u8RotationErr != TRUE)
+	{
+		--game_controller.active_block.center_y;
+		Tetris_drawShape2();
+	}
+
+	return LOC_u8RotationErr;
 }
 s8 Tetris_moveBlockLeft()
 {
+	s8 LOC_u8RotationErr = 1;
+
+	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
+
+	--game_controller.active_block.center_y; // there are only 4 rotations:   0� -> 360�
+	LOC_u8RotationErr = Tetris_drawShape2();
+
+	// if there was an error rotating, draw the block with its old rotation.
+	if (LOC_u8RotationErr != TRUE)
+	{
+		++game_controller.active_block.center_y;
+		Tetris_drawShape2();
+	}
+	return LOC_u8RotationErr;
 }

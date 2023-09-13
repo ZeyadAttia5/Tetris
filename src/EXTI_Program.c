@@ -43,7 +43,7 @@ void EXTI_voidInit(u8 copy_u8LineID)
 		GPIO_voidSetPinSpeed(IOA, PIN10, OUTPUT_LS);
 		EXTI_voidEXTILineEnable(EXTI10);
 		EXTI_voidSetSenseControl(EXTI10, EXTI_SC_FallingEdge);
-		NVIC_u8EnablePerInt(23);
+		NVIC_u8EnablePerInt(40);
 		break;
 	}
 }
@@ -253,7 +253,7 @@ void EXTI9_5_IRQHandler(void)
 	EXTI_voidClrPendingFlag(EXTI9);
 }
 
-void EXTI10_15_IRQHandler(void)
+void EXTI15_10_IRQHandler(void)
 {
 
 	// check if the pending flag is on
