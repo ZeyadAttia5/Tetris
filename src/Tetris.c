@@ -1,6 +1,7 @@
 #include "APP/Tetris.h"
 #include "MCAL/EXTI/EXTI_Interface.h"
 #include "MCAL/NVIC/NVIC_Interface.h"
+#include "MCAL/STK/STK_Interface.h"
 // #include <stddef.h>
 
 // #define container_of(ptr, type, member) ({                      \
@@ -35,8 +36,9 @@ static void Tetris_remove_L();
 static void Tetris_remove_S();
 static void Tetris_remove_Z();
 
-s8 Tetris_moveBlockRight();
+s8 Tetris_moveBlockDown();
 s8 Tetris_moveBlockLeft();
+s8 Tetris_moveBlockRight();
 
 s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 {
@@ -44,7 +46,12 @@ s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 	// static u8 shape=3;
 
 	static s8 LOC_s8BlockNum = 0;
-
+	// u8 LOC_u8ErrCode = OutOfBoundsException;
+	// game_controller.active_block.center_x = copy_u8X;
+	// game_controller.active_block.center_y = copy_u8Y;
+	// game_controller.active_block.type = LOC_s8BlockNum;
+	// game_controller.active_block.rotation = TETRIS_ROTATION_0; // TODO make rotation random
+	// Block new_block = game_controller.active_block;
 	Block new_block;
 	new_block.center_x = copy_u8X;
 	new_block.center_y = copy_u8Y;
@@ -55,8 +62,10 @@ s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 	new_block.rotation = TETRIS_ROTATION_0;
 
 	board->active_block = new_block;
+//	LOC_s8BlockNum++;
 
-	s8 LOC_u8ErrCode = 0;
+
+		s8 LOC_u8ErrCode = 0;
 	switch (new_block.type)
 	{
 	case TETRIS_SHAPE_I:
@@ -307,6 +316,7 @@ Tetris Tetris_init(void)
 	EXTI_voidSetCallBack(Tetris_moveBlockRight, EXTI8);
 	EXTI_voidSetCallBack(Tetris_moveBlockLeft, EXTI9);
 	EXTI_voidSetCallBack(Tetris_rotate, EXTI10);
+	//	STK_voidSetIntervalPeriodic(000000, Tetris_moveBlockDown);
 	return game_controller;
 }
 
@@ -445,4 +455,56 @@ s8 Tetris_moveBlockLeft()
 		Tetris_drawShape2();
 	}
 	return LOC_u8RotationErr;
+}
+
+s8 Tetris_moveBlockDown()
+{
+	s8 LOC_u8RotationErr = 1;
+
+	if (game_controller.active_block.center_x - 1 == 0)
+	{
+		// reached the bottom, create new block
+		game_controller.drawShape(&game_controller, 7, 7);
+	}
+
+
+	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
+
+	--game_controller.active_block.center_x;
+	LOC_u8RotationErr = Tetris_drawShape2();
+
+	// if there was an error rotating, draw the block with its old rotation.
+	if (LOC_u8RotationErr != TRUE)
+	{
+		++game_controller.active_block.center_x;
+		game_controller.failedDown++;
+		Tetris_drawShape2();
+		if (game_controller.failedDown == 3)
+		{
+			/* Game Over */
+			NVIC_u8DisablePerInt(23);
+			NVIC_u8DisablePerInt(40);
+			while (1)
+			{
+				matrix_update(game_controller.board, 100000);
+			}
+		}
+	}
+	return LOC_u8RotationErr;
+}
+
+void Tetris_UpdateBoard()
+{
+
+	static u16 LOC_u16Count = 0;
+	if (LOC_u16Count < 3000)
+	{
+		matrix_update(game_controller.board, 250);
+		LOC_u16Count++;
+	}
+	else
+	{
+		LOC_u16Count = 0;
+		Tetris_moveBlockDown();
+	}
 }

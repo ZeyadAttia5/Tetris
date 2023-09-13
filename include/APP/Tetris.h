@@ -30,7 +30,7 @@ typedef struct
 typedef struct Tetris
 {
     DotMatrix board;
-
+    u8 failedDown;
     s8 (*drawShape)(struct Tetris *board, u8 copy_u8X, u8 copy_u8Y);
     Block active_block;
 } Tetris;
@@ -46,3 +46,4 @@ s8 Tetris_drawShape(Tetris* board, u8 copy_u8X, u8 copy_u8Y);
 
 
 Tetris Tetris_init(void);
+void Tetris_UpdateBoard();

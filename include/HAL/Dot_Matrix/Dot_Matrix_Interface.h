@@ -34,6 +34,6 @@ typedef struct DotMatrix
 } DotMatrix;
 
 DotMatrix DotMatrix_init();
-void matrix_update(DotMatrix matrix);
+void matrix_update(DotMatrix matrix, u32 copy_u32STKVal);
 
 #endif

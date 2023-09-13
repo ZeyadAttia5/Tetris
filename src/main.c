@@ -16,7 +16,8 @@ Tetris game_controller;
 
 extern Tetris game_controller;
 
-int main() {
+int main()
+{
 	/*1- Init System Clock*/
 	RCC_voidInitSysClk();
 	/*2- Enable Clk for the periphral GPIOA & GPIOB*/
@@ -30,23 +31,23 @@ int main() {
 	/* Test system is working */
 	//	GPIO_voidSetPinValue(IOA, PIN9, OUTPUT_HIGH);
 	game_controller = Tetris_init();
-	game_controller.drawShape(&game_controller, 4, 6);
+	game_controller.drawShape(&game_controller, 7, 6);
 
-//	 game_controller.drawShape(&game_controller, 0, 6);
-//	 game_controller.drawShape(&game_controller, 3, 3);
+	//	 game_controller.drawShape(&game_controller, 0, 6);
+	//	 game_controller.drawShape(&game_controller, 3, 3);
 
-	while (1) {
-		matrix_update(game_controller.board);
-//		matrix_update(matrix);
+	while (1)
+	{
+		Tetris_UpdateBoard();
+		// matrix_update(game_controller.board, 250);
+		//		matrix_update(matrix);
 	}
 
 	return 0;
 }
 
-
 // u8 *row = &matrix.copy_u8RowPort;
 // DotMatrix *matrix2 = container_of(row, DotMatrix, copy_u8RowPort);
-
 
 //	DotMatrix matrix = DotMatrix_init();
 //	matrix.movePixelUp(matrix.buffer, 3, 3, ON_MOVE_SET_OLD);

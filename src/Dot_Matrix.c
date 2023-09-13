@@ -287,7 +287,7 @@ DotMatrix DotMatrix_init()
 	return Copy_DotMatrix;
 }
 
-void matrix_update(DotMatrix matrix)
+void matrix_update(DotMatrix matrix, u32 copy_u32STKVal)
 {
 
 	for (u8 row = 0; row < DOTMAT_MAX_ROWS; row++)
@@ -297,7 +297,7 @@ void matrix_update(DotMatrix matrix)
 			if (1 == GET_BIT(matrix.buffer[row], col))
 			{
 				matrix_set_pixel(row, col);
-				STK_voidSetBusyWait(250);
+				STK_voidSetBusyWait(copy_u32STKVal);
 			}
 			matrix_clr_pixel(row, col);
 		}
