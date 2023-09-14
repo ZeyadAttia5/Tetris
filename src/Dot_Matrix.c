@@ -297,9 +297,10 @@ void matrix_update(DotMatrix matrix, u32 copy_u32STKVal)
 			if (1 == GET_BIT(matrix.buffer[row], col))
 			{
 				matrix_set_pixel(row, col);
-				STK_voidSetBusyWait(copy_u32STKVal);
+				// STK_voidSetBusyWait(copy_u32STKVal);
 			}
 			matrix_clr_pixel(row, col);
+			STK_voidSetBusyWait(copy_u32STKVal+5);
 		}
 	}
 }
