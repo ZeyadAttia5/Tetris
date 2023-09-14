@@ -30,9 +30,7 @@ typedef struct
 typedef struct
 {
     u8 type : 3;     // 0 to 7, inclusive
-    // u8 center_x : 3; // 0 to 7, inclusive
-    // u8 center_y : 3; // 0 to 7, inclusive
-    Point points[3]; // 18 bits
+    Point points[4]; // 4 points -> 24 bits
 
     u8 rotation : 2; // 0 to 3, inclusive
 

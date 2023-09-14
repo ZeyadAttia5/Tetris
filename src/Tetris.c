@@ -20,13 +20,13 @@
 extern Tetris game_controller;
 s8 Tetris_rotate(void);
 static s8 Tetris_drawShape2(void);
-static s8 Tetris_draw_I(DotMatrix *board, Block new_block);
-static s8 Tetris_draw_O(DotMatrix *board, Block new_block);
-static s8 Tetris_draw_T(DotMatrix *board, Block new_block);
-static s8 Tetris_draw_J(DotMatrix *board, Block new_block);
-static s8 Tetris_draw_L(DotMatrix *board, Block new_block);
-static s8 Tetris_draw_S(DotMatrix *board, Block new_block);
-static s8 Tetris_draw_Z(DotMatrix *board, Block new_block);
+static s8 Tetris_draw_I();
+static s8 Tetris_draw_O();
+static s8 Tetris_draw_T();
+static s8 Tetris_draw_J();
+static s8 Tetris_draw_L();
+static s8 Tetris_draw_S();
+static s8 Tetris_draw_Z();
 
 static void Tetris_remove_I();
 static void Tetris_remove_O();
@@ -45,7 +45,7 @@ s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 	//    s8 LOC_s8BlockNum = (rand() % TETRIS_SHAPE_COUNT);
 	// static u8 shape=3;
 
-	static s8 LOC_s8BlockNum = TETRIS_SHAPE_O;
+	static s8 LOC_s8BlockNum = TETRIS_SHAPE_T;
 	// u8 LOC_u8ErrCode = OutOfBoundsException;
 	// game_controller.active_block.center_x = copy_u8X;
 	// game_controller.active_block.center_y = copy_u8Y;
@@ -68,10 +68,10 @@ s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 	switch (new_block.type)
 	{
 	case TETRIS_SHAPE_I:
-		LOC_u8ErrCode = Tetris_draw_I(&(board->board), new_block);
+		LOC_u8ErrCode = Tetris_draw_I();
 		break;
 	case TETRIS_SHAPE_O:
-		LOC_u8ErrCode = Tetris_draw_O(&(board->board), new_block);
+		LOC_u8ErrCode = Tetris_draw_O();
 		break;
 	case TETRIS_SHAPE_T:
 		LOC_u8ErrCode = Tetris_draw_T(&(board->board), new_block);
@@ -103,12 +103,10 @@ static s8 Tetris_drawShape2(void)
 	switch (game_controller.active_block.type)
 	{
 	case TETRIS_SHAPE_I:
-		LOC_u8ErrCode = Tetris_draw_I(&(game_controller.board),
-									  game_controller.active_block);
+		LOC_u8ErrCode = Tetris_draw_I();
 		break;
 	case TETRIS_SHAPE_O:
-		LOC_u8ErrCode = Tetris_draw_O(&(game_controller.board),
-									  game_controller.active_block);
+		LOC_u8ErrCode = Tetris_draw_O(&(game_controller.board));
 		break;
 	case TETRIS_SHAPE_T:
 		LOC_u8ErrCode = Tetris_draw_T(&(game_controller.board),
@@ -137,14 +135,17 @@ static s8 Tetris_drawShape2(void)
 	return LOC_u8ErrCode;
 }
 
-static s8 Tetris_draw_I(DotMatrix *board, const Block new_block)
+static s8 Tetris_draw_I()
 {
-	u8 LOC_u8Center_x = new_block.points[0].x;
-	u8 LOC_u8Center_y = new_block.points[0].y;
+	DotMatrix *board = &game_controller.board;
+	Block *new_block = &game_controller.active_block;
+
+	u8 LOC_u8Center_x = new_block->points[0].x;
+	u8 LOC_u8Center_y = new_block->points[0].y;
 	s8 LOC_s8DrawStatus = TRUE;
 
 	u8 movements = 0;
-	switch (new_block.rotation)
+	switch (new_block->rotation)
 	{
 	case TETRIS_ROTATION_0:
 		for (; movements < MAX_PIXELS_PER_BLOCK - 1; movements++)
@@ -160,8 +161,18 @@ static s8 Tetris_draw_I(DotMatrix *board, const Block new_block)
 				board->clrPixel(board->buffer, LOC_u8Center_x++,
 								LOC_u8Center_y);
 			}
+			return LOC_s8DrawStatus;
 		}
+		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x - 1;
+		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y;
+
+		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x - 2;
+		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y;
+
+		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x - 3;
+		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y;
 		break;
+
 	case TETRIS_ROTATION_90:
 		for (movements = 0; movements < MAX_PIXELS_PER_BLOCK - 1; movements++)
 		{
@@ -177,7 +188,17 @@ static s8 Tetris_draw_I(DotMatrix *board, const Block new_block)
 				board->clrPixel(board->buffer, LOC_u8Center_x,
 								LOC_u8Center_y++);
 			}
+			return LOC_s8DrawStatus;
 		}
+
+		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y - 1;
+
+		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y - 2;
+
+		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y - 3;
 		break;
 	case TETRIS_ROTATION_180:
 		for (movements = 0; movements < MAX_PIXELS_PER_BLOCK - 1; movements++)
@@ -194,7 +215,17 @@ static s8 Tetris_draw_I(DotMatrix *board, const Block new_block)
 				board->clrPixel(board->buffer, LOC_u8Center_x--,
 								LOC_u8Center_y);
 			}
+			return LOC_s8DrawStatus;
 		}
+
+		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x + 1;
+		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y;
+
+		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x + 2;
+		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y;
+
+		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x + 3;
+		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y;
 		break;
 	case TETRIS_ROTATION_270:
 		for (movements = 0; movements < MAX_PIXELS_PER_BLOCK - 1; movements++)
@@ -211,8 +242,17 @@ static s8 Tetris_draw_I(DotMatrix *board, const Block new_block)
 				board->clrPixel(board->buffer, LOC_u8Center_x,
 								LOC_u8Center_y++);
 			}
+			return LOC_s8DrawStatus;
 		}
 		break;
+		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y + 1;
+
+		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y + 2;
+
+		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y + 3;
 	default:
 		// do nothing
 		break;
@@ -220,92 +260,175 @@ static s8 Tetris_draw_I(DotMatrix *board, const Block new_block)
 	return LOC_s8DrawStatus;
 }
 
-static s8 Tetris_draw_O(DotMatrix *board, Block new_block)
+static s8 Tetris_draw_O()
 {
-	u8 LOC_u8Center_x = new_block.points[0].x;
-	u8 LOC_u8Center_y = new_block.points[0].y;
-	s8 LOC_u8DrawStatus = TRUE;
+	DotMatrix *board = &game_controller.board;
+	Block *new_block = &game_controller.active_block;
+	u8 LOC_u8Center_x = new_block->points[0].x;
+	u8 LOC_u8Center_y = new_block->points[0].y;
+	s8 LOC_s8DrawStatus = TRUE;
 
-	LOC_u8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
+	LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
 											 LOC_u8Center_y, ON_MOVE_SET_OLD);
-	if (LOC_u8DrawStatus != TRUE)
+	if (LOC_s8DrawStatus != TRUE)
 	{
 		board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y); // clear the current pixel
-		return LOC_u8DrawStatus;
+		return LOC_s8DrawStatus;
 	}
 
 	--LOC_u8Center_x; // move to next row
-	LOC_u8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y,
+	LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y,
 											 ON_MOVE_SET_OLD);
-	if (LOC_u8DrawStatus != TRUE)
+	if (LOC_s8DrawStatus != TRUE)
 	{
 		board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y); // clear the current pixel
+		return LOC_s8DrawStatus;
 	}
 
-	return LOC_u8DrawStatus;
+	game_controller.active_block.points[1].x = game_controller.active_block.points[0].x - 1;
+	game_controller.active_block.points[1].y = game_controller.active_block.points[0].y;
+
+	game_controller.active_block.points[2].x = game_controller.active_block.points[0].x;
+	game_controller.active_block.points[2].y = game_controller.active_block.points[0].y + 1;
+
+	game_controller.active_block.points[3].x = game_controller.active_block.points[0].x - 1;
+	game_controller.active_block.points[3].y = game_controller.active_block.points[0].y + 1;
 }
 
-static s8 Tetris_draw_T(DotMatrix *board, Block new_block)
+static s8 Tetris_draw_T()
 {
-	s8 LOC_u8DrawStatus = TRUE;
-	u8 LOC_u8Center_x = new_block.points[0].x;
-	u8 LOC_u8Center_y = new_block.points[0].y;
+	DotMatrix *board = &game_controller.board;
+	Block *new_block = &game_controller.active_block;
+	u8 LOC_u8Center_x = new_block->points[0].x;
+	u8 LOC_u8Center_y = new_block->points[0].y;
+	s8 LOC_s8DrawStatus = TRUE;
 
-	LOC_u8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
-											LOC_u8Center_y, ON_MOVE_SET_OLD);
-	LOC_u8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
-											LOC_u8Center_y, ON_MOVE_SET_OLD);
-	LOC_u8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
-											 LOC_u8Center_y, ON_MOVE_SET_OLD);
-
-	return LOC_u8DrawStatus;
-}
-
-static s8 Tetris_draw_J(DotMatrix *board, Block new_block)
-{
-	s8 LOC_u8DrawStatus = TRUE;
-	u8 LOC_u8Center_x = new_block.points[0].x;
-	u8 LOC_u8Center_y = new_block.points[0].y;
-
-	LOC_u8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
-											LOC_u8Center_y, ON_MOVE_SET_OLD);
-	if (LOC_u8DrawStatus != TRUE)
+	switch (new_block->rotation)
 	{
-		return LOC_u8DrawStatus;
+	case TETRIS_ROTATION_0:
+		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
+												LOC_u8Center_y, ON_MOVE_SET_OLD);
+		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
+												LOC_u8Center_y, ON_MOVE_SET_OLD);
+		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
+												 LOC_u8Center_y, ON_MOVE_SET_OLD);
+
+		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y - 1;
+
+		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x - 1;
+		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y;
+
+		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y + 1;
+		break;
+	case TETRIS_ROTATION_90:
+		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
+												LOC_u8Center_y, ON_MOVE_SET_OLD);
+		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
+												 LOC_u8Center_y, ON_MOVE_SET_OLD);
+		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x,
+											  LOC_u8Center_y, ON_MOVE_SET_OLD);
+
+		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x - 1;
+		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y;
+
+		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y + 1;
+
+		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x + 1;
+		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y;
+		break;
+	case TETRIS_ROTATION_180:
+		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
+												 LOC_u8Center_y, ON_MOVE_SET_OLD);
+		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x,
+											  LOC_u8Center_y, ON_MOVE_SET_OLD);
+		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
+												LOC_u8Center_y, ON_MOVE_SET_OLD);
+
+		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y - 1;
+
+		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x + 1;
+		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y;
+
+		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y + 1;
+		break;
+	case TETRIS_ROTATION_270:
+		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
+												LOC_u8Center_y, ON_MOVE_SET_OLD);
+		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
+												LOC_u8Center_y, ON_MOVE_SET_OLD);
+		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x,
+											  LOC_u8Center_y, ON_MOVE_SET_OLD);
+
+		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y - 1;
+
+		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x + 1;
+		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y;
+
+		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x - 1;
+		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y;
+
+	default:
+		break;
 	}
 
-	LOC_u8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x,
+	return LOC_s8DrawStatus;
+}
+
+static s8 Tetris_draw_J()
+{
+	DotMatrix *board = &game_controller.board;
+	Block *new_block = &game_controller.active_block;
+	u8 LOC_u8Center_x = new_block->points[0].x;
+	u8 LOC_u8Center_y = new_block->points[0].y;
+	s8 LOC_s8DrawStatus = TRUE;
+
+	LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
+											LOC_u8Center_y, ON_MOVE_SET_OLD);
+	if (LOC_s8DrawStatus != TRUE)
+	{
+		return LOC_s8DrawStatus;
+	}
+
+	LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x,
 										  LOC_u8Center_y, ON_MOVE_SET_OLD);
-	if (LOC_u8DrawStatus != TRUE)
+	if (LOC_s8DrawStatus != TRUE)
 	{
 		board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
 		board->clrPixel(board->buffer, LOC_u8Center_x,
 						LOC_u8Center_y + 1);
-		return LOC_u8DrawStatus;
+		return LOC_s8DrawStatus;
 	}
 	LOC_u8Center_x++;
 
-	LOC_u8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x,
+	LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x,
 										  LOC_u8Center_y, ON_MOVE_SET_OLD);
-	if (LOC_u8DrawStatus != TRUE)
+	if (LOC_s8DrawStatus != TRUE)
 	{
 		board->clrPixel(board->buffer, LOC_u8Center_y++,
 						LOC_u8Center_y);
 		board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
 		board->clrPixel(board->buffer, LOC_u8Center_x,
 						LOC_u8Center_y + 1);
-		return LOC_u8DrawStatus;
+		return LOC_s8DrawStatus;
 	}
 
-	return LOC_u8DrawStatus;
+	return LOC_s8DrawStatus;
 }
 
-static s8 Tetris_draw_L(DotMatrix *board, Block new_block)
+static s8 Tetris_draw_L()
 {
+	DotMatrix *board = &game_controller.board;
+	Block *new_block = &game_controller.active_block;
+	u8 LOC_u8Center_x = new_block->points[0].x;
+	u8 LOC_u8Center_y = new_block->points[0].y;
 	s8 LOC_s8DrawStatus = TRUE;
 
-	u8 LOC_u8Center_x = new_block.points[0].x;
-	u8 LOC_u8Center_y = new_block.points[0].y;
 	LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
 											 LOC_u8Center_y, ON_MOVE_SET_OLD);
 	LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x++,
@@ -316,12 +439,22 @@ static s8 Tetris_draw_L(DotMatrix *board, Block new_block)
 	return LOC_s8DrawStatus;
 }
 
-static s8 Tetris_draw_S(DotMatrix *board, Block new_block)
+static s8 Tetris_draw_S()
 {
+	DotMatrix *board = &game_controller.board;
+	Block *new_block = &game_controller.active_block;
+	u8 LOC_u8Center_x = new_block->points[0].x;
+	u8 LOC_u8Center_y = new_block->points[0].y;
+	s8 LOC_s8DrawStatus = TRUE;
 }
 
-static s8 Tetris_draw_Z(DotMatrix *board, Block new_block)
+static s8 Tetris_draw_Z()
 {
+	DotMatrix *board = &game_controller.board;
+	Block *new_block = &game_controller.active_block;
+	u8 LOC_u8Center_x = new_block->points[0].x;
+	u8 LOC_u8Center_y = new_block->points[0].y;
+	s8 LOC_s8DrawStatus = TRUE;
 }
 
 Tetris Tetris_init(void)
@@ -343,33 +476,40 @@ Tetris Tetris_init(void)
 Tetris_removeActiveBlock()
 {
 
-	switch (game_controller.active_block.type)
+	Block *activeBlock = &game_controller.active_block;
+	DotMatrix *board = &game_controller.board;
+	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
 	{
-	case TETRIS_SHAPE_I:
-		Tetris_remove_I();
-		break;
-	case TETRIS_SHAPE_O:
-		Tetris_remove_O();
-		break;
-	case TETRIS_SHAPE_T:
-		// Tetris_remove_T();
-		break;
-	case TETRIS_SHAPE_J:
-		// Tetris_remove_J();
-		break;
-	case TETRIS_SHAPE_L:
-		// Tetris_remove_L();
-		break;
-	case TETRIS_SHAPE_S:
-		// Tetris_remove_S();
-		break;
-	case TETRIS_SHAPE_Z:
-		// Tetris_remove_Z();
-		break;
-
-	default:
-		break;
+		board->clrPixel(board->buffer, activeBlock->points[row].x, activeBlock->points[row].y);
 	}
+
+	// switch (game_controller.active_block.type)
+	// {
+	// case TETRIS_SHAPE_I:
+	// 	Tetris_remove_I();
+	// 	break;
+	// case TETRIS_SHAPE_O:
+	// 	Tetris_remove_O();
+	// 	break;
+	// case TETRIS_SHAPE_T:
+	// 	// Tetris_remove_T();
+	// 	break;
+	// case TETRIS_SHAPE_J:
+	// 	// Tetris_remove_J();
+	// 	break;
+	// case TETRIS_SHAPE_L:
+	// 	// Tetris_remove_L();
+	// 	break;
+	// case TETRIS_SHAPE_S:
+	// 	// Tetris_remove_S();
+	// 	break;
+	// case TETRIS_SHAPE_Z:
+	// 	// Tetris_remove_Z();
+	// 	break;
+
+	// default:
+	// 	break;
+	// }
 }
 
 s8 Tetris_rotate(void)
@@ -395,6 +535,13 @@ s8 Tetris_rotate(void)
 
 s8 Tetris_moveBlockRight()
 {
+	for (u8 point = 0; point < MAX_PIXELS_PER_BLOCK; point++)
+	{
+		if (game_controller.active_block.points[point].y == 7)
+		{
+			return;
+		}
+	}
 	s8 LOC_u8RotationErr = 1;
 
 	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
@@ -414,11 +561,20 @@ s8 Tetris_moveBlockRight()
 
 s8 Tetris_moveBlockLeft()
 {
+
+	for (u8 point = 0; point < MAX_PIXELS_PER_BLOCK; point++)
+	{
+		if (game_controller.active_block.points[point].y == 0)
+		{
+			return;
+		}
+	}
+	
 	s8 LOC_u8RotationErr = 1;
 
 	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
 
-	--game_controller.active_block.points[0].y; // there are only 4 rotations:   0� -> 360�
+	--game_controller.active_block.points[0].y;
 	LOC_u8RotationErr = Tetris_drawShape2();
 
 	// if there was an error rotating, draw the block with its old rotation.
@@ -556,24 +712,4 @@ static void Tetris_remove_O()
 	game_controller.board.clrPixel(game_controller.board.buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
 	game_controller.board.clrPixel(game_controller.board.buffer, LOC_u8Center_x, LOC_u8Center_y + 1);
 	game_controller.board.clrPixel(game_controller.board.buffer, LOC_u8Center_x - 1, LOC_u8Center_y + 1);
-}
-
-static void Tetris_remove_T()
-{
-}
-
-static void Tetris_remove_J()
-{
-}
-
-static void Tetris_remove_L()
-{
-}
-
-static void Tetris_remove_S()
-{
-}
-
-static void Tetris_remove_Z()
-{
 }
