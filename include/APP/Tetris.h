@@ -18,14 +18,27 @@
 
 
 
+
 typedef struct
 {
-    u8 center_x : 3; // 0 to 7, inclusive
-    u8 center_y : 3; // 0 to 7, inclusive
+    u8 x : 3;
+    u8 y : 3;
+    // 6 bits
+} Point;
+
+
+typedef struct
+{
     u8 type : 3;     // 0 to 7, inclusive
+    // u8 center_x : 3; // 0 to 7, inclusive
+    // u8 center_y : 3; // 0 to 7, inclusive
+    Point points[3]; // 18 bits
+
     u8 rotation : 2; // 0 to 3, inclusive
-    // total bits: 11 = u16
+
+    // total bits: 29 = 4 bytes
 } Block;
+
 
 typedef struct Tetris
 {
@@ -35,15 +48,13 @@ typedef struct Tetris
     Block active_block;
 } Tetris;
 
-
 /******************************************************************/
 /* Func. Name: Tetris_drawShape                                   */
 /* i/p arguments: void                                            */
 /* o/p arguments: s8 number of drawn shape; (-1) if error         */
 /* Desc. : This API allows user draw a random shape from tetris   */
 /******************************************************************/
-s8 Tetris_drawShape(Tetris* board, u8 copy_u8X, u8 copy_u8Y);
-
+s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y);
 
 Tetris Tetris_init(void);
 void Tetris_UpdateBoard();
