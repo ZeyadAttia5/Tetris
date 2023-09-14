@@ -45,7 +45,7 @@ s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 	//    s8 LOC_s8BlockNum = (rand() % TETRIS_SHAPE_COUNT);
 	// static u8 shape=3;
 
-	static s8 LOC_s8BlockNum = TETRIS_SHAPE_T;
+	static s8 LOC_s8BlockNum = TETRIS_SHAPE_J;
 	// u8 LOC_u8ErrCode = OutOfBoundsException;
 	// game_controller.active_block.center_x = copy_u8X;
 	// game_controller.active_block.center_y = copy_u8Y;
@@ -74,10 +74,10 @@ s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 		LOC_u8ErrCode = Tetris_draw_O();
 		break;
 	case TETRIS_SHAPE_T:
-		LOC_u8ErrCode = Tetris_draw_T(&(board->board), new_block);
+		LOC_u8ErrCode = Tetris_draw_T();
 		break;
 	case TETRIS_SHAPE_J:
-		LOC_u8ErrCode = Tetris_draw_J(&(board->board), new_block);
+		LOC_u8ErrCode = Tetris_draw_J();
 		break;
 	case TETRIS_SHAPE_L:
 		LOC_u8ErrCode = Tetris_draw_L(&(board->board), new_block);
@@ -106,15 +106,13 @@ static s8 Tetris_drawShape2(void)
 		LOC_u8ErrCode = Tetris_draw_I();
 		break;
 	case TETRIS_SHAPE_O:
-		LOC_u8ErrCode = Tetris_draw_O(&(game_controller.board));
+		LOC_u8ErrCode = Tetris_draw_O();
 		break;
 	case TETRIS_SHAPE_T:
-		LOC_u8ErrCode = Tetris_draw_T(&(game_controller.board),
-									  game_controller.active_block);
+		LOC_u8ErrCode = Tetris_draw_T();
 		break;
 	case TETRIS_SHAPE_J:
-		LOC_u8ErrCode = Tetris_draw_J(&(game_controller.board),
-									  game_controller.active_block);
+		LOC_u8ErrCode = Tetris_draw_J();
 		break;
 	case TETRIS_SHAPE_L:
 		LOC_u8ErrCode = Tetris_draw_L(&(game_controller.board),
@@ -387,37 +385,168 @@ static s8 Tetris_draw_J()
 	u8 LOC_u8Center_x = new_block->points[0].x;
 	u8 LOC_u8Center_y = new_block->points[0].y;
 	s8 LOC_s8DrawStatus = TRUE;
-
-	LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
-											LOC_u8Center_y, ON_MOVE_SET_OLD);
-	if (LOC_s8DrawStatus != TRUE)
+	switch (new_block->rotation)
 	{
-		return LOC_s8DrawStatus;
-	}
+	case TETRIS_ROTATION_0:
+		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		if (LOC_s8DrawStatus != TRUE)
+		{
+			return LOC_s8DrawStatus;
+		}
 
-	LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x,
-										  LOC_u8Center_y, ON_MOVE_SET_OLD);
-	if (LOC_s8DrawStatus != TRUE)
-	{
-		board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-		board->clrPixel(board->buffer, LOC_u8Center_x,
-						LOC_u8Center_y + 1);
-		return LOC_s8DrawStatus;
-	}
-	LOC_u8Center_x++;
+		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		if (LOC_s8DrawStatus != TRUE)
+		{
+			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
+			return LOC_s8DrawStatus;
+		}
+		LOC_u8Center_x++;
 
-	LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x,
-										  LOC_u8Center_y, ON_MOVE_SET_OLD);
-	if (LOC_s8DrawStatus != TRUE)
-	{
-		board->clrPixel(board->buffer, LOC_u8Center_y++,
-						LOC_u8Center_y);
-		board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-		board->clrPixel(board->buffer, LOC_u8Center_x,
-						LOC_u8Center_y + 1);
-		return LOC_s8DrawStatus;
-	}
+		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		if (LOC_s8DrawStatus != TRUE)
+		{
+			board->clrPixel(board->buffer, LOC_u8Center_x--,
+							LOC_u8Center_y);
+			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
+			return LOC_s8DrawStatus;
+		}
 
+		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y - 1;
+
+		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x + 1;
+		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y;
+
+		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x + 2;
+		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y;
+		break;
+
+	case TETRIS_ROTATION_90:
+		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x,
+											  LOC_u8Center_y, ON_MOVE_SET_OLD);
+		if (LOC_s8DrawStatus != TRUE)
+		{
+			return LOC_s8DrawStatus;
+		}
+
+		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
+												 LOC_u8Center_y, ON_MOVE_SET_OLD);
+		if (LOC_s8DrawStatus != TRUE)
+		{
+			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+			board->clrPixel(board->buffer, LOC_u8Center_x + 1,
+							LOC_u8Center_y);
+			return LOC_s8DrawStatus;
+		}
+		LOC_u8Center_y++;
+
+		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
+												 LOC_u8Center_y, ON_MOVE_SET_OLD);
+		if (LOC_s8DrawStatus != TRUE)
+		{
+			board->clrPixel(board->buffer, LOC_u8Center_x,
+							LOC_u8Center_y--);
+			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+			board->clrPixel(board->buffer, LOC_u8Center_x + 1,
+							LOC_u8Center_y);
+			return LOC_s8DrawStatus;
+		}
+
+		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x + 1;
+		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y;
+
+		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y + 1;
+
+		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y + 2;
+		break;
+
+	case TETRIS_ROTATION_180:
+		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
+												 LOC_u8Center_y, ON_MOVE_SET_OLD);
+		if (LOC_s8DrawStatus != TRUE)
+		{
+			return LOC_s8DrawStatus;
+		}
+
+		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
+												LOC_u8Center_y, ON_MOVE_SET_OLD);
+		if (LOC_s8DrawStatus != TRUE)
+		{
+			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+			board->clrPixel(board->buffer, LOC_u8Center_x,
+							LOC_u8Center_y + 1);
+			return LOC_s8DrawStatus;
+		}
+		LOC_u8Center_x--;
+
+		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
+												LOC_u8Center_y, ON_MOVE_SET_OLD);
+		if (LOC_s8DrawStatus != TRUE)
+		{
+			board->clrPixel(board->buffer, LOC_u8Center_x--,
+							LOC_u8Center_y);
+			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+			board->clrPixel(board->buffer, LOC_u8Center_x,
+							LOC_u8Center_y + 1);
+			return LOC_s8DrawStatus;
+		}
+		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y + 1;
+
+		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x - 1;
+		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y;
+
+		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x - 2;
+		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y;
+		break;
+
+	case TETRIS_ROTATION_270:
+		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
+												LOC_u8Center_y, ON_MOVE_SET_OLD);
+		if (LOC_s8DrawStatus != TRUE)
+		{
+			return LOC_s8DrawStatus;
+		}
+
+		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
+												LOC_u8Center_y, ON_MOVE_SET_OLD);
+		if (LOC_s8DrawStatus != TRUE)
+		{
+			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+			board->clrPixel(board->buffer, LOC_u8Center_x - 1,
+							LOC_u8Center_y);
+			return LOC_s8DrawStatus;
+		}
+		LOC_u8Center_y--;
+
+		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
+												LOC_u8Center_y, ON_MOVE_SET_OLD);
+		if (LOC_s8DrawStatus != TRUE)
+		{
+			board->clrPixel(board->buffer, LOC_u8Center_x,
+							LOC_u8Center_y++);
+			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+			board->clrPixel(board->buffer, LOC_u8Center_x - 1,
+							LOC_u8Center_y);
+			return LOC_s8DrawStatus;
+		}
+		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x - 1;
+		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y;
+
+		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y - 1;
+
+		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x;
+		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y - 2;
+		break;
+
+	default:
+		break;
+	}
 	return LOC_s8DrawStatus;
 }
 
@@ -482,34 +611,6 @@ Tetris_removeActiveBlock()
 	{
 		board->clrPixel(board->buffer, activeBlock->points[row].x, activeBlock->points[row].y);
 	}
-
-	// switch (game_controller.active_block.type)
-	// {
-	// case TETRIS_SHAPE_I:
-	// 	Tetris_remove_I();
-	// 	break;
-	// case TETRIS_SHAPE_O:
-	// 	Tetris_remove_O();
-	// 	break;
-	// case TETRIS_SHAPE_T:
-	// 	// Tetris_remove_T();
-	// 	break;
-	// case TETRIS_SHAPE_J:
-	// 	// Tetris_remove_J();
-	// 	break;
-	// case TETRIS_SHAPE_L:
-	// 	// Tetris_remove_L();
-	// 	break;
-	// case TETRIS_SHAPE_S:
-	// 	// Tetris_remove_S();
-	// 	break;
-	// case TETRIS_SHAPE_Z:
-	// 	// Tetris_remove_Z();
-	// 	break;
-
-	// default:
-	// 	break;
-	// }
 }
 
 s8 Tetris_rotate(void)
@@ -518,15 +619,14 @@ s8 Tetris_rotate(void)
 
 	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
 
-	game_controller.active_block.rotation =
-		(game_controller.active_block.rotation + 1) % 4; // there are only 4 rotations:   0� -> 360�
+	// there are only 4 rotations:   0 -> 360
+	game_controller.active_block.rotation = (game_controller.active_block.rotation + 1) % 4; 
 	LOC_u8RotationErr = Tetris_drawShape2();
 
 	// if there was an error rotating, draw the block with its old rotation.
 	if (LOC_u8RotationErr != TRUE)
 	{
-		game_controller.active_block.rotation =
-			(game_controller.active_block.rotation - 1) % 4;
+		game_controller.active_block.rotation = (game_controller.active_block.rotation - 1) % 4;
 		Tetris_drawShape2();
 	}
 
@@ -569,7 +669,7 @@ s8 Tetris_moveBlockLeft()
 			return;
 		}
 	}
-	
+
 	s8 LOC_u8RotationErr = 1;
 
 	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
