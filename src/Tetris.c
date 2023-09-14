@@ -133,6 +133,174 @@ static s8 Tetris_drawShape2(void)
 	return LOC_u8ErrCode;
 }
 
+Tetris Tetris_init(void)
+{
+	Tetris game_controller;
+	game_controller.board = DotMatrix_init();
+	game_controller.drawShape = Tetris_drawShape;
+	EXTI_voidInit(EXTI8);
+	EXTI_voidInit(EXTI9);
+	EXTI_voidInit(EXTI10);
+	NVIC_voidSetPriorityConfig(G0_SG16);
+	EXTI_voidSetCallBack(Tetris_moveBlockRight, EXTI8);
+	EXTI_voidSetCallBack(Tetris_moveBlockLeft, EXTI9);
+	EXTI_voidSetCallBack(Tetris_rotate, EXTI10);
+	//	STK_voidSetIntervalPeriodic(000000, Tetris_moveBlockDown);
+	return game_controller;
+}
+
+Tetris_removeActiveBlock()
+{
+
+	Block *activeBlock = &game_controller.active_block;
+	DotMatrix *board = &game_controller.board;
+	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
+	{
+		board->clrPixel(board->buffer, activeBlock->points[row].x, activeBlock->points[row].y);
+	}
+}
+
+s8 Tetris_rotate(void)
+{
+	s8 LOC_u8RotationErr = 1;
+
+	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
+
+	// there are only 4 rotations:   0 -> 360
+	game_controller.active_block.rotation = (game_controller.active_block.rotation + 1) % 4; 
+	LOC_u8RotationErr = Tetris_drawShape2();
+
+	// if there was an error rotating, draw the block with its old rotation.
+	if (LOC_u8RotationErr != TRUE)
+	{
+		game_controller.active_block.rotation = (game_controller.active_block.rotation - 1) % 4;
+		Tetris_drawShape2();
+	}
+
+	return LOC_u8RotationErr;
+}
+
+s8 Tetris_moveBlockRight()
+{
+	for (u8 point = 0; point < MAX_PIXELS_PER_BLOCK; point++)
+	{
+		if (game_controller.active_block.points[point].y == 7)
+		{
+			return;
+		}
+	}
+	s8 LOC_u8RotationErr = 1;
+
+	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
+
+	++game_controller.active_block.points[0].y; // there are only 4 rotations:   0� -> 360�
+	LOC_u8RotationErr = Tetris_drawShape2();
+
+	// if there was an error rotating, draw the block with its old rotation.
+	if (LOC_u8RotationErr != TRUE)
+	{
+		--game_controller.active_block.points[0].y;
+		Tetris_drawShape2();
+	}
+
+	return LOC_u8RotationErr;
+}
+
+s8 Tetris_moveBlockLeft()
+{
+
+	for (u8 point = 0; point < MAX_PIXELS_PER_BLOCK; point++)
+	{
+		if (game_controller.active_block.points[point].y == 0)
+		{
+			return;
+		}
+	}
+
+	s8 LOC_u8RotationErr = 1;
+
+	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
+
+	--game_controller.active_block.points[0].y;
+	LOC_u8RotationErr = Tetris_drawShape2();
+
+	// if there was an error rotating, draw the block with its old rotation.
+	if (LOC_u8RotationErr != TRUE)
+	{
+		++game_controller.active_block.points[0].y;
+		Tetris_drawShape2();
+	}
+	return LOC_u8RotationErr;
+}
+
+s8 Tetris_moveBlockDown()
+{
+	s8 LOC_u8RotationErr = 1;
+
+	switch (game_controller.active_block.type)
+	case TETRIS_SHAPE_I:
+		if (game_controller.active_block.points[0].x == 0 || game_controller.active_block.points[0].x - 3 == 0)
+		{
+			// reached the bottom, create new block
+			game_controller.drawShape(&game_controller, 7, 7);
+		}
+
+	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
+
+	--game_controller.active_block.points[0].x;
+	LOC_u8RotationErr = Tetris_drawShape2();
+
+	// if there was an error rotating, draw the block with its old rotation.
+	if (LOC_u8RotationErr != TRUE)
+	{
+		++game_controller.active_block.points[0].x;
+		game_controller.failedDown++;
+		Tetris_drawShape2();
+		if (game_controller.failedDown == 3)
+		{
+			/* Game Over */
+			NVIC_u8DisablePerInt(23);
+			NVIC_u8DisablePerInt(40);
+			while (1)
+			{
+				matrix_update(game_controller.board, 100000);
+			}
+		}
+	}
+	return LOC_u8RotationErr;
+}
+
+void Tetris_UpdateBoard()
+{
+
+	static u16 LOC_u16Count = 0;
+	if (LOC_u16Count < 1000)
+	{
+		matrix_update(game_controller.board, 250);
+		LOC_u16Count++;
+	}
+	else
+	{
+		LOC_u16Count = 0;
+		// Tetris_moveBlockDown();
+		matrix_update(game_controller.board, 250);
+	}
+
+	// clear full rows
+	for (u8 row = 0; row < DOTMAT_MAX_ROWS; row++)
+	{
+		if (game_controller.board.buffer[row] == 0xFF)
+		{
+			game_controller.board.clrRow(game_controller.board.buffer, row);
+			Tetris_removeActiveBlock();
+		}
+		else
+		{
+			// do nothing
+		}
+	}
+}
+
 static s8 Tetris_draw_I()
 {
 	DotMatrix *board = &game_controller.board;
@@ -586,230 +754,3 @@ static s8 Tetris_draw_Z()
 	s8 LOC_s8DrawStatus = TRUE;
 }
 
-Tetris Tetris_init(void)
-{
-	Tetris game_controller;
-	game_controller.board = DotMatrix_init();
-	game_controller.drawShape = Tetris_drawShape;
-	EXTI_voidInit(EXTI8);
-	EXTI_voidInit(EXTI9);
-	EXTI_voidInit(EXTI10);
-	NVIC_voidSetPriorityConfig(G0_SG16);
-	EXTI_voidSetCallBack(Tetris_moveBlockRight, EXTI8);
-	EXTI_voidSetCallBack(Tetris_moveBlockLeft, EXTI9);
-	EXTI_voidSetCallBack(Tetris_rotate, EXTI10);
-	//	STK_voidSetIntervalPeriodic(000000, Tetris_moveBlockDown);
-	return game_controller;
-}
-
-Tetris_removeActiveBlock()
-{
-
-	Block *activeBlock = &game_controller.active_block;
-	DotMatrix *board = &game_controller.board;
-	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
-	{
-		board->clrPixel(board->buffer, activeBlock->points[row].x, activeBlock->points[row].y);
-	}
-}
-
-s8 Tetris_rotate(void)
-{
-	s8 LOC_u8RotationErr = 1;
-
-	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
-
-	// there are only 4 rotations:   0 -> 360
-	game_controller.active_block.rotation = (game_controller.active_block.rotation + 1) % 4; 
-	LOC_u8RotationErr = Tetris_drawShape2();
-
-	// if there was an error rotating, draw the block with its old rotation.
-	if (LOC_u8RotationErr != TRUE)
-	{
-		game_controller.active_block.rotation = (game_controller.active_block.rotation - 1) % 4;
-		Tetris_drawShape2();
-	}
-
-	return LOC_u8RotationErr;
-}
-
-s8 Tetris_moveBlockRight()
-{
-	for (u8 point = 0; point < MAX_PIXELS_PER_BLOCK; point++)
-	{
-		if (game_controller.active_block.points[point].y == 7)
-		{
-			return;
-		}
-	}
-	s8 LOC_u8RotationErr = 1;
-
-	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
-
-	++game_controller.active_block.points[0].y; // there are only 4 rotations:   0� -> 360�
-	LOC_u8RotationErr = Tetris_drawShape2();
-
-	// if there was an error rotating, draw the block with its old rotation.
-	if (LOC_u8RotationErr != TRUE)
-	{
-		--game_controller.active_block.points[0].y;
-		Tetris_drawShape2();
-	}
-
-	return LOC_u8RotationErr;
-}
-
-s8 Tetris_moveBlockLeft()
-{
-
-	for (u8 point = 0; point < MAX_PIXELS_PER_BLOCK; point++)
-	{
-		if (game_controller.active_block.points[point].y == 0)
-		{
-			return;
-		}
-	}
-
-	s8 LOC_u8RotationErr = 1;
-
-	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
-
-	--game_controller.active_block.points[0].y;
-	LOC_u8RotationErr = Tetris_drawShape2();
-
-	// if there was an error rotating, draw the block with its old rotation.
-	if (LOC_u8RotationErr != TRUE)
-	{
-		++game_controller.active_block.points[0].y;
-		Tetris_drawShape2();
-	}
-	return LOC_u8RotationErr;
-}
-
-s8 Tetris_moveBlockDown()
-{
-	s8 LOC_u8RotationErr = 1;
-
-	switch (game_controller.active_block.type)
-	case TETRIS_SHAPE_I:
-		if (game_controller.active_block.points[0].x == 0 || game_controller.active_block.points[0].x - 3 == 0)
-		{
-			// reached the bottom, create new block
-			game_controller.drawShape(&game_controller, 7, 7);
-		}
-
-	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
-
-	--game_controller.active_block.points[0].x;
-	LOC_u8RotationErr = Tetris_drawShape2();
-
-	// if there was an error rotating, draw the block with its old rotation.
-	if (LOC_u8RotationErr != TRUE)
-	{
-		++game_controller.active_block.points[0].x;
-		game_controller.failedDown++;
-		Tetris_drawShape2();
-		if (game_controller.failedDown == 3)
-		{
-			/* Game Over */
-			NVIC_u8DisablePerInt(23);
-			NVIC_u8DisablePerInt(40);
-			while (1)
-			{
-				matrix_update(game_controller.board, 100000);
-			}
-		}
-	}
-	return LOC_u8RotationErr;
-}
-
-void Tetris_UpdateBoard()
-{
-
-	static u16 LOC_u16Count = 0;
-	if (LOC_u16Count < 1000)
-	{
-		matrix_update(game_controller.board, 250);
-		LOC_u16Count++;
-	}
-	else
-	{
-		LOC_u16Count = 0;
-		// Tetris_moveBlockDown();
-		matrix_update(game_controller.board, 250);
-	}
-
-	// clear full rows
-	for (u8 row = 0; row < DOTMAT_MAX_ROWS; row++)
-	{
-		if (game_controller.board.buffer[row] == 0xFF)
-		{
-			game_controller.board.clrRow(game_controller.board.buffer, row);
-			Tetris_removeActiveBlock();
-		}
-		else
-		{
-			// do nothing
-		}
-	}
-}
-
-static void Tetris_remove_I()
-{
-	Block new_block = game_controller.active_block;
-	DotMatrix *board = &game_controller.board;
-
-	u8 LOC_u8Center_x = new_block.points[0].x;
-	u8 LOC_u8Center_y = new_block.points[0].y;
-
-	switch (new_block.rotation)
-	{
-	case TETRIS_ROTATION_0:
-		for (u8 movements = 0; movements < MAX_PIXELS_PER_BLOCK - 1;
-			 movements++)
-		{
-			board->clrPixel(board->buffer, LOC_u8Center_x--, LOC_u8Center_y);
-		}
-		board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-		break;
-	case TETRIS_ROTATION_90:
-		for (u8 movements = 0; movements < MAX_PIXELS_PER_BLOCK - 1;
-			 movements++)
-		{
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y--);
-		}
-		board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-		break;
-	case TETRIS_ROTATION_180:
-		for (u8 movements = 0; movements < MAX_PIXELS_PER_BLOCK - 1;
-			 movements++)
-		{
-			board->clrPixel(board->buffer, LOC_u8Center_x++, LOC_u8Center_y);
-		}
-		board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-		break;
-	case TETRIS_ROTATION_270:
-		for (u8 movements = 0; movements < MAX_PIXELS_PER_BLOCK - 1;
-			 movements++)
-		{
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y++);
-		}
-		board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-		break;
-	default:
-		// do nothing
-		break;
-	}
-}
-
-static void Tetris_remove_O()
-{
-
-	u8 LOC_u8Center_x = game_controller.active_block.points[0].x;
-	u8 LOC_u8Center_y = game_controller.active_block.points[0].y;
-
-	game_controller.board.clrPixel(game_controller.board.buffer, LOC_u8Center_x, LOC_u8Center_y);
-	game_controller.board.clrPixel(game_controller.board.buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
-	game_controller.board.clrPixel(game_controller.board.buffer, LOC_u8Center_x, LOC_u8Center_y + 1);
-	game_controller.board.clrPixel(game_controller.board.buffer, LOC_u8Center_x - 1, LOC_u8Center_y + 1);
-}
