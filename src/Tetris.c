@@ -321,7 +321,7 @@ void Tetris_UpdateBoard()
 {
 	s8 LOC_s8RemovedBlock = -5;
 	static u16 LOC_u16Count = 0;
-	if (LOC_u16Count < 500)
+	if (LOC_u16Count < 250)
 	{
 		matrix_update(game_controller.board, 250);
 		LOC_u16Count++;
@@ -339,7 +339,11 @@ void Tetris_UpdateBoard()
 		if (game_controller.board.buffer[row] == 0xFF)
 		{
 
-			STK_voidSetBusyWait(2000000);
+			for (u16 i = 3500; i > 51; i-=50)
+			{
+				matrix_update(game_controller.board, i);
+			}
+			
 			game_controller.board.clrRow(game_controller.board.buffer, row);
 			Tetris_removeActiveBlock();
 			LOC_s8RemovedBlock = TRUE;
