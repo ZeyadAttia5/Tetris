@@ -290,7 +290,7 @@ DotMatrix DotMatrix_init()
 void matrix_update(DotMatrix matrix, u32 copy_u32STKVal)
 {
 
-	for (u8 row = 0; row < DOTMAT_MAX_ROWS; row++)
+	for (u8 row = 0; row < DOTMAT_MAX_ROWS - 3; row++)
 	{
 		for (u8 col = 0; col < DOTMAT_MAX_COLS; ++col)
 		{
@@ -300,7 +300,7 @@ void matrix_update(DotMatrix matrix, u32 copy_u32STKVal)
 				// STK_voidSetBusyWait(copy_u32STKVal);
 			}
 			matrix_clr_pixel(row, col);
-			STK_voidSetBusyWait(copy_u32STKVal+5);
+			STK_voidSetBusyWait(copy_u32STKVal + 5);
 		}
 	}
 }

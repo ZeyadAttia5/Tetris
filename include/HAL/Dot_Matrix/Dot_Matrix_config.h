@@ -1,7 +1,7 @@
 #ifndef DOT_MATRIX_CONFIG
 #define DOT_MATRIX_CONFIG
 
-#define DOTMAT_MAX_ROWS         8
+#define DOTMAT_MAX_ROWS         11
 #define DOTMAT_MAX_COLS         8
 
 // as represented on the Hardware, count from 0

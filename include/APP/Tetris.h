@@ -21,7 +21,7 @@
 
 typedef struct
 {
-    u8 x : 3;
+    u8 x : 4;
     u8 y : 3;
     // 6 bits
 } Point;

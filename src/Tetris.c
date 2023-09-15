@@ -28,30 +28,24 @@ static s8 Tetris_draw_L();
 static s8 Tetris_draw_S();
 static s8 Tetris_draw_Z();
 
-static void Tetris_remove_I();
-static void Tetris_remove_O();
-static void Tetris_remove_T();
-static void Tetris_remove_J();
-static void Tetris_remove_L();
-static void Tetris_remove_S();
-static void Tetris_remove_Z();
-
 s8 Tetris_moveBlockDown();
 s8 Tetris_moveBlockLeft();
 s8 Tetris_moveBlockRight();
 
 s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 {
-	//    s8 LOC_s8BlockNum = (rand() % TETRIS_SHAPE_COUNT);
 	// static u8 shape=3;
 
-	static s8 LOC_s8BlockNum = TETRIS_SHAPE_S;
+	// static s8 LOC_s8BlockNum = TETRIS_SHAPE_S;
 	// u8 LOC_u8ErrCode = OutOfBoundsException;
 	// game_controller.active_block.center_x = copy_u8X;
 	// game_controller.active_block.center_y = copy_u8Y;
 	// game_controller.active_block.type = LOC_s8BlockNum;
 	// game_controller.active_block.rotation = TETRIS_ROTATION_0; // TODO make rotation random
 	// Block new_block = game_controller.active_block;
+
+
+	s8 LOC_s8BlockNum = (rand() % TETRIS_SHAPE_COUNT);
 	Block new_block;
 	new_block.points[0].x = copy_u8X;
 	new_block.points[0].y = copy_u8Y;
@@ -60,7 +54,6 @@ s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 	//	LOC_s8BlockNum++;
 
 	board->active_block = new_block;
-	//	LOC_s8BlockNum++;
 
 	s8 LOC_u8ErrCode = 0;
 	switch (new_block.type)
@@ -78,13 +71,13 @@ s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 		LOC_u8ErrCode = Tetris_draw_J();
 		break;
 	case TETRIS_SHAPE_L:
-		LOC_u8ErrCode = Tetris_draw_L(&(board->board), new_block);
+		LOC_u8ErrCode = Tetris_draw_L();
 		break;
 	case TETRIS_SHAPE_S:
-		LOC_u8ErrCode = Tetris_draw_S(&(board->board), new_block);
+		LOC_u8ErrCode = Tetris_draw_S();
 		break;
 	case TETRIS_SHAPE_Z:
-		LOC_u8ErrCode = Tetris_draw_Z(&(board->board), new_block);
+		LOC_u8ErrCode = Tetris_draw_Z();
 		break;
 
 	default:
@@ -231,36 +224,45 @@ s8 Tetris_moveBlockLeft()
 s8 Tetris_moveBlockDown()
 {
 	s8 LOC_u8RotationErr = 1;
+	static u8 LOC_u8SpawnCol = 4;
 
-	switch (game_controller.active_block.type)
-	case TETRIS_SHAPE_I:
-		if (game_controller.active_block.points[0].x == 0 || game_controller.active_block.points[0].x - 3 == 0)
+	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
+	{
+		if (game_controller.active_block.points[row].x == 0)
 		{
 			// reached the bottom, create new block
-			game_controller.drawShape(&game_controller, 7, 7);
+			game_controller.drawShape(&game_controller, DOTMAT_MAX_ROWS-1, LOC_u8SpawnCol);
+			return TRUE;
 		}
+	}
+	
+
 
 	Tetris_removeActiveBlock(); // remove the current block to prevent it from colliding with itself
 
 	--game_controller.active_block.points[0].x;
 	LOC_u8RotationErr = Tetris_drawShape2();
 
-	// if there was an error rotating, draw the block with its old rotation.
+	// if there was an error in movement, draw the block with its old location and spawn a new block
 	if (LOC_u8RotationErr != TRUE)
 	{
 		++game_controller.active_block.points[0].x;
 		game_controller.failedDown++;
 		Tetris_drawShape2();
-		if (game_controller.failedDown == 3)
-		{
-			/* Game Over */
-			NVIC_u8DisablePerInt(23);
-			NVIC_u8DisablePerInt(40);
-			while (1)
-			{
-				matrix_update(game_controller.board, 100000);
-			}
-		}
+		LOC_u8RotationErr = game_controller.drawShape(&game_controller, DOTMAT_MAX_ROWS-1, LOC_u8SpawnCol);
+
+		// //cant move the new block into the matrix
+		// if (LOC_u8RotationErr == CollisionDetectedException && game_controller.active_block.points[0].x > 7);
+		// {
+
+		// 	/* Game Over */
+		// 	NVIC_u8DisablePerInt(23);
+		// 	NVIC_u8DisablePerInt(40);
+		// 	while (1)
+		// 	{
+		// 		matrix_update(game_controller.board, 100000);
+		// 	}
+		// }
 	}
 	return LOC_u8RotationErr;
 }
@@ -269,7 +271,7 @@ void Tetris_UpdateBoard()
 {
 
 	static u16 LOC_u16Count = 0;
-	if (LOC_u16Count < 1000)
+	if (LOC_u16Count < 500)
 	{
 		matrix_update(game_controller.board, 250);
 		LOC_u16Count++;
@@ -277,8 +279,8 @@ void Tetris_UpdateBoard()
 	else
 	{
 		LOC_u16Count = 0;
-		// Tetris_moveBlockDown();
-		matrix_update(game_controller.board, 250);
+		Tetris_moveBlockDown();
+		// matrix_update(game_controller.board, 250);
 	}
 
 	// clear full rows
