@@ -338,7 +338,7 @@ void Tetris_UpdateBoard()
 	{
 		if (game_controller.board.buffer[row] == 0xFF)
 		{
-
+			//animation for before clearing the Row 🌟
 			for (u16 i = 3500; i > 51; i-=50)
 			{
 				matrix_update(game_controller.board, i);
