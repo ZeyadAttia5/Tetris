@@ -6,7 +6,6 @@ https://github.com/ZeyadAttia5/Tetris/assets/85710632/03602dfb-a8b7-4ae3-be4d-ac
 ## Table of Contents
 - [Introduction](#introduction)
 - [Hardware Setup](#hardware-setup)
-
 - [Software Architecture](#software-architecture)
 - [How to Build and Flash](#how-to-build-and-flash)
 - [Controls](#controls)
@@ -51,14 +50,13 @@ The game is built upon a modular architecture, making it easy to understand and 
 
 To build and flash the Tetris game onto your STM32F401CC, follow these steps:
 
-1. Clone the repository: `git clone <repo_url>`
+1. Clone the repository: `git clone https://github.com/ZeyadAttia5/Tetris`
 2. Set up your development environment with the necessary toolchain and STM32CubeMX if you haven't already.
 3. Open the project in your development environment.
 4. Configure the project settings to target the STM32F401CC microcontroller.
 5. Build the project.
 6. Flash the generated binary onto your STM32F401CC microcontroller.
 
-For more detailed instructions and troubleshooting tips, refer to the project's [Wiki](wiki_link) (if available).
 
 ### Controls
 
@@ -70,4 +68,4 @@ Control the Tetris game using the following buttons:
 
 ### License
 
-This Tetris game is open-source and available under the [MIT License](license_link). Feel free to use, modify, and distribute it as you see fit.
+This Tetris game is open-source and available under the [GPL v3 License]([license_link](https://www.gnu.org/licenses/gpl-3.0.en.html)). Feel free to use, modify, and distribute it as you see fit.
