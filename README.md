@@ -1,10 +1,12 @@
 # Tetris Game for STM32F401CC and 8x8 Dot Matrix
 
-![Tetris in action](link_to_image)
+https://github.com/ZeyadAttia5/Tetris/assets/85710632/03602dfb-a8b7-4ae3-be4d-acd9b2912abc
+
 
 ## Table of Contents
 - [Introduction](#introduction)
 - [Hardware Setup](#hardware-setup)
+
 - [Software Architecture](#software-architecture)
 - [How to Build and Flash](#how-to-build-and-flash)
 - [Controls](#controls)
