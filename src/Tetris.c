@@ -59,9 +59,8 @@ s8 Tetris_drawShape(u8 copy_u8X, u8 copy_u8Y)
 	new_block.points[0].y = copy_u8Y;
 	new_block.type = LOC_s8BlockNum;
 	new_block.rotation = TETRIS_ROTATION_0;
-	//	LOC_s8BlockNum++;
-
 	game_controller.active_block = new_block;
+	//	LOC_s8BlockNum++;
 
 	// initialize the other 3 points
 	s8 LOC_u8ErrCode = 0;
@@ -94,6 +93,15 @@ s8 Tetris_drawShape(u8 copy_u8X, u8 copy_u8Y)
 		break;
 	}
 
+	/* check for boundaries */
+	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
+	{
+		// if there is already a one in the buffer in that pixel, then collision detected, RETURN
+		if (new_block.points[row].x >= DOTMAT_MAX_ROWS ||  new_block.points[row].y >= DOTMAT_MAX_COLS)
+			return OutOfBoundsException;
+	}
+	/* check for boundaries */
+
 	/* check for collision */
 	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
 	{
@@ -109,12 +117,14 @@ s8 Tetris_drawShape(u8 copy_u8X, u8 copy_u8Y)
 		board->setPixel(board->buffer, new_block.points[row].x, new_block.points[row].y);
 	}
 	/* draw the shape */
-
 	return LOC_s8BlockNum;
 }
 
 static s8 Tetris_drawShape2(void)
 {
+	DotMatrix *board = &game_controller.board;
+	Block *new_block = &game_controller.active_block;
+
 	s8 LOC_u8ErrCode = TRUE;
 	switch (game_controller.active_block.type)
 	{
@@ -143,6 +153,22 @@ static s8 Tetris_drawShape2(void)
 	default:
 		break;
 	}
+
+	/* check for collision */
+	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
+	{
+		// if there is already a one in the buffer in that pixel, then collision detected, RETURN
+		if (1 == GET_BIT(board->buffer[new_block->points[row].x], new_block->points[row].y))
+			return CollisionDetectedException;
+	}
+	/* check for collision */
+
+	/* draw the shape */
+	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
+	{
+		board->setPixel(board->buffer, new_block->points[row].x, new_block->points[row].y);
+	}
+	/* draw the shape */
 	return LOC_u8ErrCode;
 }
 
@@ -419,31 +445,31 @@ static void Tetris_draw_T()
 	switch (new_block->rotation)
 	{
 	case TETRIS_ROTATION_0:
-		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// nothing is drawn return error status
-			return LOC_s8DrawStatus;
-		}
-		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its left
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// nothing is drawn return error status
+		// 	return LOC_s8DrawStatus;
+		// }
+		// LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its left
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
 
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its left and to bottom
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
-			board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its left and to bottom
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
 		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y - 1;
@@ -457,31 +483,31 @@ static void Tetris_draw_T()
 
 	case TETRIS_ROTATION_90:
 
-		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// Nothing is drawn, just return the error
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// Nothing is drawn, just return the error
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one below it
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one below it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its right and to bottom
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1);
-			board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its right and to bottom
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x - 1;
 		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y;
@@ -494,31 +520,31 @@ static void Tetris_draw_T()
 		break;
 	case TETRIS_ROTATION_180:
 
-		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// Nothing is drawn, just return the error
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// Nothing is drawn, just return the error
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one above it
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one above it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its right and top
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1);
-			board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its right and top
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
 		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y - 1;
@@ -530,31 +556,31 @@ static void Tetris_draw_T()
 		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y + 1;
 		break;
 	case TETRIS_ROTATION_270:
-		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// Nothing is drawn, just return the error
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// Nothing is drawn, just return the error
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its left
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its left
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its left and top
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
-			board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its left and top
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
 		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y - 1;
@@ -569,7 +595,7 @@ static void Tetris_draw_T()
 		break;
 	}
 
-	return LOC_s8DrawStatus;
+	// return LOC_s8DrawStatus;
 }
 
 static void Tetris_draw_J()
@@ -582,30 +608,30 @@ static void Tetris_draw_J()
 	switch (new_block->rotation)
 	{
 	case TETRIS_ROTATION_0:
-		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
-			return LOC_s8DrawStatus;
-		}
-		LOC_u8Center_x++;
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
+		// 	return LOC_s8DrawStatus;
+		// }
+		// LOC_u8Center_x++;
 
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			board->clrPixel(board->buffer, LOC_u8Center_x--,
-							LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x--,
+		// 					LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
 		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y - 1;
@@ -618,35 +644,35 @@ static void Tetris_draw_J()
 		break;
 
 	case TETRIS_ROTATION_90:
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x,
-											  LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x,
+		// 									  LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
-												 LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x + 1,
-							LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
-		LOC_u8Center_y++;
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
+		// 										 LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x + 1,
+		// 					LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
+		// LOC_u8Center_y++;
 
-		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
-												 LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			board->clrPixel(board->buffer, LOC_u8Center_x,
-							LOC_u8Center_y--);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x + 1,
-							LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
+		// 										 LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x,
+		// 					LOC_u8Center_y--);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x + 1,
+		// 					LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x + 1;
 		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y;
@@ -659,35 +685,35 @@ static void Tetris_draw_J()
 		break;
 
 	case TETRIS_ROTATION_180:
-		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
-												 LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
+		// 										 LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
-												LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x,
-							LOC_u8Center_y + 1);
-			return LOC_s8DrawStatus;
-		}
-		LOC_u8Center_x--;
+		// LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
+		// 										LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x,
+		// 					LOC_u8Center_y + 1);
+		// 	return LOC_s8DrawStatus;
+		// }
+		// LOC_u8Center_x--;
 
-		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
-												LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			board->clrPixel(board->buffer, LOC_u8Center_x--,
-							LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x,
-							LOC_u8Center_y + 1);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
+		// 										LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x--,
+		// 					LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x,
+		// 					LOC_u8Center_y + 1);
+		// 	return LOC_s8DrawStatus;
+		// }
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
 		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y + 1;
 
@@ -699,35 +725,35 @@ static void Tetris_draw_J()
 		break;
 
 	case TETRIS_ROTATION_270:
-		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
-												LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x,
+		// 										LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
-												LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x - 1,
-							LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
-		LOC_u8Center_y--;
+		// LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
+		// 										LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1,
+		// 					LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
+		// LOC_u8Center_y--;
 
-		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
-												LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			board->clrPixel(board->buffer, LOC_u8Center_x,
-							LOC_u8Center_y++);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x - 1,
-							LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x,
+		// 										LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x,
+		// 					LOC_u8Center_y++);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1,
+		// 					LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
 		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x - 1;
 		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y;
 
@@ -755,31 +781,31 @@ static void Tetris_draw_L()
 	switch (new_block->rotation)
 	{
 	case TETRIS_ROTATION_0:
-		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// nothing to clear, just return the error
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// nothing to clear, just return the error
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its right
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its right
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1);
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its right and the one above it
-			board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y); // top pixel
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1); // to its right
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its right and the one above it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y); // top pixel
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1); // to its right
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		// save the location of the points by using the center
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
@@ -794,31 +820,55 @@ static void Tetris_draw_L()
 
 	case TETRIS_ROTATION_90:
 
-		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// nothing to clear, just return the error
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// nothing to clear, just return the error
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one below it
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one below it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel, one below it, and one to its right
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
-			board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y); // bottom pixel
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1); // to its right
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel, one below it, and one to its right
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y); // bottom pixel
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1); // to its right
+		// 	return LOC_s8DrawStatus;
+		// }LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// nothing to clear, just return the error
+		// 	return LOC_s8DrawStatus;
+		// }
+
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one below it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
+
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel, one below it, and one to its right
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y); // bottom pixel
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1); // to its right
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		// save the location of the points by using the center
 		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x - 1;
@@ -833,31 +883,31 @@ static void Tetris_draw_L()
 
 	case TETRIS_ROTATION_180:
 
-		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// nothing to clear, just return the error
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// nothing to clear, just return the error
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its left
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its left
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its left and the one below it
-			board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y); // bottom pixel
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center pixel
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1); // left   pixel
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its left and the one below it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y); // bottom pixel
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center pixel
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1); // left   pixel
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		// save the location of the points by using the center
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
@@ -871,31 +921,31 @@ static void Tetris_draw_L()
 		break;
 
 	case TETRIS_ROTATION_270:
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// nothing to clear, just return the error
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// nothing to clear, just return the error
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one above it
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one above it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel, one above it, and one to its left
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
-			board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y); // top pixel
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1); // to its left
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel, one above it, and one to its left
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y); // top pixel
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1); // to its left
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		// save the location of the points by using the center
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x + 1;
@@ -928,31 +978,31 @@ static void Tetris_draw_S()
 	switch (new_block->rotation)
 	{
 	case TETRIS_ROTATION_0:
-		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// nothing to clear, just return the error
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// nothing to clear, just return the error
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its right
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its right
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1);
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its right and the one above it
-			board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y); // top pixel
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1); // to its right
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its right and the one above it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y); // top pixel
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1); // to its right
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		// save the location of the points by using the center
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
@@ -965,31 +1015,31 @@ static void Tetris_draw_S()
 		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y + 1;
 		break;
 	case TETRIS_ROTATION_90:
-		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// nothing to clear, just return the error
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// nothing to clear, just return the error
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one below it
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one below it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its right and the one below it
-			board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y); // top pixel
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1); // to its right
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its right and the one below it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y); // top pixel
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y - 1); // to its right
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		// save the location of the points by using the center
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
@@ -1022,31 +1072,31 @@ static void Tetris_draw_Z()
 	switch (new_block->rotation)
 	{
 	case TETRIS_ROTATION_0:
-		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// nothing to clear, just return the error
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// nothing to clear, just return the error
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its right
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its right
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1);
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its right and the one above it
-			board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y); // top pixel
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1); // to its right
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelLeft(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its right and the one above it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x + 1, LOC_u8Center_y); // top pixel
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1); // to its right
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		// save the location of the points by using the center
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
@@ -1059,31 +1109,31 @@ static void Tetris_draw_Z()
 		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y - 1;
 		break;
 	case TETRIS_ROTATION_90:
-		LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// nothing to clear, just return the error
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelDown(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// nothing to clear, just return the error
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one below it
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
-			board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one below it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y);
+		// 	return LOC_s8DrawStatus;
+		// }
 
-		LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1, ON_MOVE_SET_OLD);
-		if (LOC_s8DrawStatus != TRUE)
-		{
-			// clear the center pixel and the one to its right and the one below it
-			board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y); // top pixel
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
-			board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1); // to its right
-			return LOC_s8DrawStatus;
-		}
+		// LOC_s8DrawStatus = board->movePixelUp(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1, ON_MOVE_SET_OLD);
+		// if (LOC_s8DrawStatus != TRUE)
+		// {
+		// 	// clear the center pixel and the one to its right and the one below it
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x - 1, LOC_u8Center_y); // top pixel
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y);		// center
+		// 	board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y + 1); // to its right
+		// 	return LOC_s8DrawStatus;
+		// }
 
 		// save the location of the points by using the center
 		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
