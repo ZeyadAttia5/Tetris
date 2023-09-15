@@ -2,6 +2,7 @@
 #include "MCAL/EXTI/EXTI_Interface.h"
 #include "MCAL/NVIC/NVIC_Interface.h"
 #include "MCAL/STK/STK_Interface.h"
+#include <stdlib.h>
 
 // four becuase it is TETRis
 #define MAX_PIXELS_PER_BLOCK 4
@@ -81,6 +82,9 @@ s8 Tetris_drawShape(u8 copy_u8X, u8 copy_u8Y)
 		LOC_s8BlockNum = -2; // drew nothing
 		break;
 	}
+
+	//update the new block
+	new_block = game_controller.active_block;
 
 	/* check for boundaries */
 	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
@@ -250,7 +254,7 @@ s8 Tetris_moveBlockLeft()
 	{
 		if (game_controller.active_block.points[point].y == 0)
 		{
-			return;
+			return OutOfBoundsException;
 		}
 	}
 
@@ -294,7 +298,6 @@ s8 Tetris_moveBlockDown()
 	if (LOC_u8RotationErr != TRUE)
 	{
 		++game_controller.active_block.points[0].x;
-		game_controller.failedDown++;
 		Tetris_drawShape2();
 		LOC_u8RotationErr = game_controller.drawShape(DOTMAT_MAX_ROWS - 1, LOC_u8SpawnCol);
 
@@ -410,7 +413,7 @@ static void Tetris_draw_I()
 		new_block->points[3].x = new_block->points[0].x;
 		new_block->points[3].y = new_block->points[0].y + 3;
 		/* New Location */
-
+		break;
 	default:
 		// do nothing
 		break;
@@ -436,7 +439,6 @@ static void Tetris_draw_O()
 static void Tetris_draw_T()
 {
 	Block *new_block = &game_controller.active_block;
-	s8 LOC_s8DrawStatus = TRUE;
 
 	switch (new_block->rotation)
 	{
@@ -484,7 +486,7 @@ static void Tetris_draw_T()
 
 		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x - 1;
 		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y;
-
+		break;
 	default:
 		break;
 	}
@@ -493,7 +495,6 @@ static void Tetris_draw_T()
 static void Tetris_draw_J()
 {
 	Block *new_block = &game_controller.active_block;
-	s8 LOC_s8DrawStatus = TRUE;
 	switch (new_block->rotation)
 	{
 	case TETRIS_ROTATION_0:
@@ -552,7 +553,6 @@ static void Tetris_draw_J()
 static void Tetris_draw_L()
 {
 	Block *new_block = &game_controller.active_block;
-	s8 LOC_s8DrawStatus = TRUE;
 
 	switch (new_block->rotation)
 	{

@@ -22,7 +22,7 @@
 typedef struct
 {
     u8 x : 4;
-    u8 y : 3;
+    u8 y : 4;
     // 7 bits
 } Point;
 
@@ -41,7 +41,7 @@ typedef struct
 typedef struct Tetris
 {
     DotMatrix board;
-    u8 failedDown;
+//    u8 failedDown;
     s8 (*drawShape)(u8 copy_u8X, u8 copy_u8Y);
     Block active_block;
 } Tetris;
