@@ -43,24 +43,6 @@ void clrRow(u8 *buffer, u8 copy_x)
 }
 /* control of pixels */
 
-/* isPixelEmpty */
-
-u8 isPixelEmpty(u8 *buffer, u8 copy_x, u8 copy_y)
-{
-	u8 LOC_u8IsPixelEmpty = 0;
-	if (copy_x >= DOTMAT_MAX_ROWS || copy_y > DOTMAT_MAX_COLS)
-	{
-		u8 LOC_u8IsPixelEmpty = 2; // return 2 to signify out of bounds
-	}
-	else if (0 == GET_BIT(buffer[copy_x], copy_y))
-	{
-		LOC_u8IsPixelEmpty = 1;
-	}
-	return LOC_u8IsPixelEmpty;
-}
-
-/* isPixelEmpty */
-
 /* movement of pixels */
 s8 movePixelUp(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 {
@@ -72,25 +54,19 @@ s8 movePixelUp(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 	}
 	else
 	{
-		if (GET_BIT(buffer[copy_x + 1], copy_y) == 1) // if bit up is 1, collision detected
+
+		setPixel(buffer, copy_x + 1, copy_y);
+		LOC_ErrMovedPixel = TRUE;
+		switch (copy_u8Mode)
 		{
-			LOC_ErrMovedPixel = CollisionDetectedException;
-		}
-		else
-		{
-			setPixel(buffer, copy_x + 1, copy_y);
-			LOC_ErrMovedPixel = TRUE;
-			switch (copy_u8Mode)
-			{
-			case ON_MOVE_CLEAR_OLD:
-				clrPixel(buffer, copy_x, copy_y);
-				break;
-			case ON_MOVE_SET_OLD:
-				setPixel(buffer, copy_x, copy_y);
-				break;
-			default:
-				break;
-			}
+		case ON_MOVE_CLEAR_OLD:
+			clrPixel(buffer, copy_x, copy_y);
+			break;
+		case ON_MOVE_SET_OLD:
+			setPixel(buffer, copy_x, copy_y);
+			break;
+		default:
+			break;
 		}
 	}
 	return LOC_ErrMovedPixel;
@@ -105,25 +81,19 @@ s8 movePixelDown(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 	}
 	else
 	{
-		if (GET_BIT(buffer[copy_x - 1], copy_y) == 1) // if bit down is 1, collision detected
+
+		setPixel(buffer, copy_x - 1, copy_y);
+		LOC_ErrMovedPixel = TRUE;
+		switch (copy_u8Mode)
 		{
-			LOC_ErrMovedPixel = CollisionDetectedException;
-		}
-		else
-		{
-			setPixel(buffer, copy_x - 1, copy_y);
-			LOC_ErrMovedPixel = TRUE;
-			switch (copy_u8Mode)
-			{
-			case ON_MOVE_CLEAR_OLD:
-				clrPixel(buffer, copy_x, copy_y);
-				break;
-			case ON_MOVE_SET_OLD:
-				setPixel(buffer, copy_x, copy_y);
-				break;
-			default:
-				break;
-			}
+		case ON_MOVE_CLEAR_OLD:
+			clrPixel(buffer, copy_x, copy_y);
+			break;
+		case ON_MOVE_SET_OLD:
+			setPixel(buffer, copy_x, copy_y);
+			break;
+		default:
+			break;
 		}
 	}
 	return LOC_ErrMovedPixel;
@@ -139,25 +109,19 @@ s8 movePixelRight(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 	}
 	else
 	{
-		if (GET_BIT(buffer[copy_x], copy_y + 1)) // if bit to the right is 1, collision detected
+
+		setPixel(buffer, copy_x, copy_y + 1);
+		LOC_ErrMovedPixel = TRUE;
+		switch (copy_u8Mode)
 		{
-			LOC_ErrMovedPixel = CollisionDetectedException;
-		}
-		else
-		{
-			setPixel(buffer, copy_x, copy_y + 1);
-			LOC_ErrMovedPixel = TRUE;
-			switch (copy_u8Mode)
-			{
-			case ON_MOVE_CLEAR_OLD:
-				clrPixel(buffer, copy_x, copy_y);
-				break;
-			case ON_MOVE_SET_OLD:
-				setPixel(buffer, copy_x, copy_y);
-				break;
-			default:
-				break;
-			}
+		case ON_MOVE_CLEAR_OLD:
+			clrPixel(buffer, copy_x, copy_y);
+			break;
+		case ON_MOVE_SET_OLD:
+			setPixel(buffer, copy_x, copy_y);
+			break;
+		default:
+			break;
 		}
 	}
 	return LOC_ErrMovedPixel;
@@ -173,25 +137,18 @@ s8 movePixelLeft(u8 *buffer, u8 copy_x, u8 copy_y, u8 copy_u8Mode)
 	}
 	else
 	{
-		if (GET_BIT(buffer[copy_x], copy_y - 1)) // if bit to the Left is 1, collision detected
+		setPixel(buffer, copy_x, copy_y - 1);
+		LOC_ErrMovedPixel = TRUE;
+		switch (copy_u8Mode)
 		{
-			LOC_ErrMovedPixel = CollisionDetectedException;
-		}
-		else
-		{
-			setPixel(buffer, copy_x, copy_y - 1);
-			LOC_ErrMovedPixel = TRUE;
-			switch (copy_u8Mode)
-			{
-			case ON_MOVE_CLEAR_OLD:
-				clrPixel(buffer, copy_x, copy_y);
-				break;
-			case ON_MOVE_SET_OLD:
-				setPixel(buffer, copy_x, copy_y);
-				break;
-			default:
-				break;
-			}
+		case ON_MOVE_CLEAR_OLD:
+			clrPixel(buffer, copy_x, copy_y);
+			break;
+		case ON_MOVE_SET_OLD:
+			setPixel(buffer, copy_x, copy_y);
+			break;
+		default:
+			break;
 		}
 	}
 	return LOC_ErrMovedPixel;
@@ -217,8 +174,6 @@ DotMatrix DotMatrix_init()
 	Copy_DotMatrix.movePixelDown = movePixelDown;
 	Copy_DotMatrix.movePixelLeft = movePixelLeft;
 	Copy_DotMatrix.movePixelRight = movePixelRight;
-
-	Copy_DotMatrix.isPixelEmpty = isPixelEmpty;
 
 	Copy_DotMatrix.copy_u8RowPort = DOTMAT_ROW_PORT;
 	Copy_DotMatrix.copy_u8ColPort = DOTMAT_COL_PORT;
