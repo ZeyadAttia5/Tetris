@@ -83,7 +83,7 @@ s8 Tetris_drawShape(u8 copy_u8X, u8 copy_u8Y)
 		break;
 	}
 
-	//update the new block
+	// update the new block
 	new_block = game_controller.active_block;
 
 	/* check for boundaries */
@@ -319,7 +319,7 @@ s8 Tetris_moveBlockDown()
 
 void Tetris_UpdateBoard()
 {
-
+	s8 LOC_s8RemovedBlock = -5;
 	static u16 LOC_u16Count = 0;
 	if (LOC_u16Count < 500)
 	{
@@ -338,9 +338,11 @@ void Tetris_UpdateBoard()
 	{
 		if (game_controller.board.buffer[row] == 0xFF)
 		{
+
 			STK_voidSetBusyWait(2000000);
 			game_controller.board.clrRow(game_controller.board.buffer, row);
 			Tetris_removeActiveBlock();
+			LOC_s8RemovedBlock = TRUE;
 			for (u8 remainingRows = row + 1; remainingRows < DOTMAT_MAX_ROWS; remainingRows++)
 			{
 				game_controller.board.buffer[remainingRows - 1] = game_controller.board.buffer[remainingRows];
@@ -350,6 +352,12 @@ void Tetris_UpdateBoard()
 		{
 			// do nothing
 		}
+	}
+
+	if (LOC_s8RemovedBlock == TRUE)
+	{
+		// create a new block
+		Tetris_drawShape(DOTMAT_MAX_ROWS - 1, DOTMAT_MAX_COLS / 2);
 	}
 }
 
