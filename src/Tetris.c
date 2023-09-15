@@ -416,11 +416,7 @@ static void Tetris_draw_I()
 
 static void Tetris_draw_O()
 {
-	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
-	u8 LOC_u8Center_x = new_block->points[0].x;
-	u8 LOC_u8Center_y = new_block->points[0].y;
-	s8 LOC_s8DrawStatus = TRUE;
 
 	/* New Location */
 	new_block->points[1].x = new_block->points[0].x - 1;
@@ -436,10 +432,7 @@ static void Tetris_draw_O()
 
 static void Tetris_draw_T()
 {
-	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
-	u8 LOC_u8Center_x = new_block->points[0].x;
-	u8 LOC_u8Center_y = new_block->points[0].y;
 	s8 LOC_s8DrawStatus = TRUE;
 
 	switch (new_block->rotation)
@@ -492,16 +485,11 @@ static void Tetris_draw_T()
 	default:
 		break;
 	}
-
-	// return LOC_s8DrawStatus;
 }
 
 static void Tetris_draw_J()
 {
-	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
-	u8 LOC_u8Center_x = new_block->points[0].x;
-	u8 LOC_u8Center_y = new_block->points[0].y;
 	s8 LOC_s8DrawStatus = TRUE;
 	switch (new_block->rotation)
 	{
@@ -556,15 +544,11 @@ static void Tetris_draw_J()
 	default:
 		break;
 	}
-	return LOC_s8DrawStatus;
 }
 
 static void Tetris_draw_L()
 {
-	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
-	u8 LOC_u8Center_x = new_block->points[0].x;
-	u8 LOC_u8Center_y = new_block->points[0].y;
 	s8 LOC_s8DrawStatus = TRUE;
 
 	switch (new_block->rotation)
@@ -621,21 +605,14 @@ static void Tetris_draw_L()
 		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y - 2;
 		break;
 
-		break;
 	default:
 		break;
 	}
-
-	return LOC_s8DrawStatus;
 }
 
 static void Tetris_draw_S()
 {
-	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
-	u8 LOC_u8Center_x = new_block->points[0].x;
-	u8 LOC_u8Center_y = new_block->points[0].y;
-	s8 LOC_s8DrawStatus = TRUE;
 	new_block->rotation %= 2;
 
 	switch (new_block->rotation)
@@ -669,17 +646,11 @@ static void Tetris_draw_S()
 		// do nothing
 		break;
 	}
-
-	return LOC_s8DrawStatus;
 }
 
 static void Tetris_draw_Z()
 {
-	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
-	u8 LOC_u8Center_x = new_block->points[0].x;
-	u8 LOC_u8Center_y = new_block->points[0].y;
-	s8 LOC_s8DrawStatus = TRUE;
 	new_block->rotation %= 2;
 
 	switch (new_block->rotation)
@@ -712,6 +683,4 @@ static void Tetris_draw_Z()
 		// do nothing
 		break;
 	}
-
-	return LOC_s8DrawStatus;
 }
