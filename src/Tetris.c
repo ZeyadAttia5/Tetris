@@ -32,6 +32,13 @@ s8 Tetris_moveBlockDown();
 s8 Tetris_moveBlockLeft();
 s8 Tetris_moveBlockRight();
 
+/* 
+	Bug:
+		When a collision occurs, the pixel should not be cleared 
+		but rather stay in its original state
+*/
+
+
 s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 {
 	// static u8 shape=3;
