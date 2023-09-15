@@ -20,13 +20,13 @@
 extern Tetris game_controller;
 s8 Tetris_rotate(void);
 static s8 Tetris_drawShape2(void);
-static s8 Tetris_draw_I();
-static s8 Tetris_draw_O();
-static s8 Tetris_draw_T();
-static s8 Tetris_draw_J();
-static s8 Tetris_draw_L();
-static s8 Tetris_draw_S();
-static s8 Tetris_draw_Z();
+static void Tetris_draw_I();
+static void Tetris_draw_O();
+static void Tetris_draw_T();
+static void Tetris_draw_J();
+static void Tetris_draw_L();
+static void Tetris_draw_S();
+static void Tetris_draw_Z();
 
 s8 Tetris_moveBlockDown();
 s8 Tetris_moveBlockLeft();
@@ -38,7 +38,7 @@ s8 Tetris_moveBlockRight();
 		but rather stay in its original state
 */
 
-s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
+s8 Tetris_drawShape(u8 copy_u8X, u8 copy_u8Y)
 {
 	// static u8 shape=3;
 
@@ -51,6 +51,9 @@ s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 	// Block new_block = game_controller.active_block;
 
 	s8 LOC_s8BlockNum = (rand() % TETRIS_SHAPE_COUNT);
+	DotMatrix *board = &game_controller.board;
+
+	// create new block, initialize its center
 	Block new_block;
 	new_block.points[0].x = copy_u8X;
 	new_block.points[0].y = copy_u8Y;
@@ -58,8 +61,9 @@ s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 	new_block.rotation = TETRIS_ROTATION_0;
 	//	LOC_s8BlockNum++;
 
-	board->active_block = new_block;
+	game_controller.active_block = new_block;
 
+	// initialize the other 3 points
 	s8 LOC_u8ErrCode = 0;
 	switch (new_block.type)
 	{
@@ -89,6 +93,22 @@ s8 Tetris_drawShape(Tetris *board, u8 copy_u8X, u8 copy_u8Y)
 		LOC_s8BlockNum = -2; // drew nothing
 		break;
 	}
+
+	/* check for collision */
+	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
+	{
+		// if there is already a one in the buffer in that pixel, then collision detected, RETURN
+		if (1 == GET_BIT(board->buffer[new_block.points[row].x], new_block.points[row].y))
+			return CollisionDetectedException;
+	}
+	/* check for collision */
+
+	/* draw the shape */
+	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
+	{
+		board->setPixel(board->buffer, new_block.points[row].x, new_block.points[row].y);
+	}
+	/* draw the shape */
 
 	return LOC_s8BlockNum;
 }
@@ -236,7 +256,7 @@ s8 Tetris_moveBlockDown()
 		if (game_controller.active_block.points[row].x == 0)
 		{
 			// reached the bottom, create new block
-			game_controller.drawShape(&game_controller, DOTMAT_MAX_ROWS - 1, LOC_u8SpawnCol);
+			game_controller.drawShape(DOTMAT_MAX_ROWS - 1, LOC_u8SpawnCol);
 			return TRUE;
 		}
 	}
@@ -252,7 +272,7 @@ s8 Tetris_moveBlockDown()
 		++game_controller.active_block.points[0].x;
 		game_controller.failedDown++;
 		Tetris_drawShape2();
-		LOC_u8RotationErr = game_controller.drawShape(&game_controller, DOTMAT_MAX_ROWS - 1, LOC_u8SpawnCol);
+		LOC_u8RotationErr = game_controller.drawShape(DOTMAT_MAX_ROWS - 1, LOC_u8SpawnCol);
 
 		// //cant move the new block into the matrix
 		// if (LOC_u8RotationErr == CollisionDetectedException && game_controller.active_block.points[0].x > 7);
@@ -301,143 +321,74 @@ void Tetris_UpdateBoard()
 	}
 }
 
-static s8 Tetris_draw_I()
+static void Tetris_draw_I()
 {
-	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
 
-	u8 LOC_u8Center_x = new_block->points[0].x;
-	u8 LOC_u8Center_y = new_block->points[0].y;
-	s8 LOC_s8DrawStatus = TRUE;
-
-	u8 movements = 0;
 	switch (new_block->rotation)
 	{
 	case TETRIS_ROTATION_0:
 
 		/* New Location */
-		game_controller.active_block.points[1].x = new_block->points[0].x - 1;
-		game_controller.active_block.points[1].y = new_block->points[0].y;
+		new_block->points[1].x = new_block->points[0].x - 1;
+		new_block->points[1].y = new_block->points[0].y;
 
-		game_controller.active_block.points[2].x = new_block->points[0].x - 2;
-		game_controller.active_block.points[2].y = new_block->points[0].y;
+		new_block->points[2].x = new_block->points[0].x - 2;
+		new_block->points[2].y = new_block->points[0].y;
 
-		game_controller.active_block.points[3].x = new_block->points[0].x - 3;
-		game_controller.active_block.points[3].y = new_block->points[0].y;
+		new_block->points[3].x = new_block->points[0].x - 3;
+		new_block->points[3].y = new_block->points[0].y;
 		/* New Location */
-
-		/* check for collision */
-		for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
-		{
-			// if there is already a one in the buffer in that pixel, then collision detected, RETURN
-			if (1 == GET_BIT(game_controller.board.buffer[new_block->points[row].x], new_block->points[row].y))
-				return CollisionDetectedException;
-		}
-		/* check for collision */
-
-		/* draw the shape */
-		for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
-		{
-			board->setPixel(board->buffer, new_block->points[row].x, new_block->points[row].y);
-		}
-		/* draw the shape */
 		break;
 
 	case TETRIS_ROTATION_90:
 
 		/* New Location */
-		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
-		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y - 1;
+		new_block->points[1].x = new_block->points[0].x;
+		new_block->points[1].y = new_block->points[0].y - 1;
 
-		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x;
-		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y - 2;
+		new_block->points[2].x = new_block->points[0].x;
+		new_block->points[2].y = new_block->points[0].y - 2;
 
-		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x;
-		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y - 3;
+		new_block->points[3].x = new_block->points[0].x;
+		new_block->points[3].y = new_block->points[0].y - 3;
 		/* New Location */
 
-		/* check for collision */
-		for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
-		{
-			// if there is already a one in the buffer in that pixel, then collision detected, RETURN
-			if (1 == GET_BIT(game_controller.board.buffer[new_block->points[row].x], new_block->points[row].y))
-				return CollisionDetectedException;
-		}
-		/* check for collision */
-
-		/* draw the shape */
-		for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
-		{
-			board->setPixel(board->buffer, new_block->points[row].x, new_block->points[row].y);
-		}
-		/* draw the shape */
 		break;
 
 	case TETRIS_ROTATION_180:
 		/* New Location */
-		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x + 1;
-		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y;
+		new_block->points[1].x = new_block->points[0].x + 1;
+		new_block->points[1].y = new_block->points[0].y;
 
-		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x + 2;
-		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y;
+		new_block->points[2].x = new_block->points[0].x + 2;
+		new_block->points[2].y = new_block->points[0].y;
 
-		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x + 3;
-		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y;
+		new_block->points[3].x = new_block->points[0].x + 3;
+		new_block->points[3].y = new_block->points[0].y;
 		/* New Location */
 
-		/* check for collision */
-		for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
-		{
-			// if there is already a one in the buffer in that pixel, then collision detected, RETURN
-			if (1 == GET_BIT(game_controller.board.buffer[new_block->points[row].x], new_block->points[row].y))
-				return CollisionDetectedException;
-		}
-		/* check for collision */
-
-		/* draw the shape */
-		for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
-		{
-			board->setPixel(board->buffer, new_block->points[row].x, new_block->points[row].y);
-		}
-		/* draw the shape */
 		break;
 	case TETRIS_ROTATION_270:
 
 		/* New Location */
-		game_controller.active_block.points[1].x = game_controller.active_block.points[0].x;
-		game_controller.active_block.points[1].y = game_controller.active_block.points[0].y + 1;
+		new_block->points[1].x = new_block->points[0].x;
+		new_block->points[1].y = new_block->points[0].y + 1;
 
-		game_controller.active_block.points[2].x = game_controller.active_block.points[0].x;
-		game_controller.active_block.points[2].y = game_controller.active_block.points[0].y + 2;
+		new_block->points[2].x = new_block->points[0].x;
+		new_block->points[2].y = new_block->points[0].y + 2;
 
-		game_controller.active_block.points[3].x = game_controller.active_block.points[0].x;
-		game_controller.active_block.points[3].y = game_controller.active_block.points[0].y + 3;
+		new_block->points[3].x = new_block->points[0].x;
+		new_block->points[3].y = new_block->points[0].y + 3;
 		/* New Location */
-
-		/* check for collision */
-		for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
-		{
-			// if there is already a one in the buffer in that pixel, then collision detected, RETURN
-			if (1 == GET_BIT(game_controller.board.buffer[new_block->points[row].x], new_block->points[row].y))
-				return CollisionDetectedException;
-		}
-		/* check for collision */
-
-		/* draw the shape */
-		for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
-		{
-			board->setPixel(board->buffer, new_block->points[row].x, new_block->points[row].y);
-		}
-		/* draw the shape */
 
 	default:
 		// do nothing
 		break;
 	}
-	return LOC_s8DrawStatus;
 }
 
-static s8 Tetris_draw_O()
+static void Tetris_draw_O()
 {
 	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
@@ -445,34 +396,19 @@ static s8 Tetris_draw_O()
 	u8 LOC_u8Center_y = new_block->points[0].y;
 	s8 LOC_s8DrawStatus = TRUE;
 
-	LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x,
-											 LOC_u8Center_y, ON_MOVE_SET_OLD);
-	if (LOC_s8DrawStatus != TRUE)
-	{
-		board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y); // clear the current pixel
-		return LOC_s8DrawStatus;
-	}
+	/* New Location */
+	new_block->points[1].x = new_block->points[0].x - 1;
+	new_block->points[1].y = new_block->points[0].y;
 
-	--LOC_u8Center_x; // move to next row
-	LOC_s8DrawStatus = board->movePixelRight(board->buffer, LOC_u8Center_x, LOC_u8Center_y,
-											 ON_MOVE_SET_OLD);
-	if (LOC_s8DrawStatus != TRUE)
-	{
-		board->clrPixel(board->buffer, LOC_u8Center_x, LOC_u8Center_y); // clear the current pixel
-		return LOC_s8DrawStatus;
-	}
+	new_block->points[2].x = new_block->points[0].x;
+	new_block->points[2].y = new_block->points[0].y + 1;
 
-	game_controller.active_block.points[1].x = game_controller.active_block.points[0].x - 1;
-	game_controller.active_block.points[1].y = game_controller.active_block.points[0].y;
-
-	game_controller.active_block.points[2].x = game_controller.active_block.points[0].x;
-	game_controller.active_block.points[2].y = game_controller.active_block.points[0].y + 1;
-
-	game_controller.active_block.points[3].x = game_controller.active_block.points[0].x - 1;
-	game_controller.active_block.points[3].y = game_controller.active_block.points[0].y + 1;
+	new_block->points[3].x = new_block->points[0].x - 1;
+	new_block->points[3].y = new_block->points[0].y + 1;
+	/* New Location */
 }
 
-static s8 Tetris_draw_T()
+static void Tetris_draw_T()
 {
 	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
@@ -636,7 +572,7 @@ static s8 Tetris_draw_T()
 	return LOC_s8DrawStatus;
 }
 
-static s8 Tetris_draw_J()
+static void Tetris_draw_J()
 {
 	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
@@ -808,7 +744,7 @@ static s8 Tetris_draw_J()
 	return LOC_s8DrawStatus;
 }
 
-static s8 Tetris_draw_L()
+static void Tetris_draw_L()
 {
 	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
@@ -980,7 +916,7 @@ static s8 Tetris_draw_L()
 	return LOC_s8DrawStatus;
 }
 
-static s8 Tetris_draw_S()
+static void Tetris_draw_S()
 {
 	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
@@ -1074,7 +1010,7 @@ static s8 Tetris_draw_S()
 	return LOC_s8DrawStatus;
 }
 
-static s8 Tetris_draw_Z()
+static void Tetris_draw_Z()
 {
 	DotMatrix *board = &game_controller.board;
 	Block *new_block = &game_controller.active_block;
