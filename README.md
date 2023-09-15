@@ -1,6 +1,6 @@
 # Tetris Game for STM32F401CC and 8x8 Dot Matrix
 
-![Tetris Gameplay Video](https://youtube.com/watch?v=dhCYXqVE0EU&si=VVamrD4gHJXvJVow)
+[![Tetris Gameplay Video]([https://youtube.com/watch?v=dhCYXqVE0EU&si=VVamrD4gHJXvJVow](https://img.freepik.com/premium-vector/seamless-flat-ui-colors-tetris-pattern-black-lines-isolated-black-background-vector-illustration_503038-155.jpg?size=626&ext=jpg))](https://youtube.com/watch?v=dhCYXqVE0EU&si=VVamrD4gHJXvJVow)
 
 ## Table of Contents
 - [Introduction](#introduction)
