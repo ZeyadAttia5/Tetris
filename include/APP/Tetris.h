@@ -23,18 +23,18 @@ typedef struct
 {
     u8 x : 4;
     u8 y : 3;
-    // 6 bits
+    // 7 bits
 } Point;
 
 
 typedef struct
 {
-    u8 type : 3;     // 0 to 7, inclusive
-    Point points[4]; // 4 points -> 24 bits
-
+    Point points[4]; // 4 points -> 28 bits
     u8 rotation : 2; // 0 to 3, inclusive
+    u8 type : 3;     // 0 to 7, inclusive
 
-    // total bits: 29 = 4 bytes
+
+    // total bits: 33 = 5 bytes
 } Block;
 
 
