@@ -31,9 +31,9 @@ To play Tetris on your STM32F401CC with an 8x8 dot matrix, you'll need the follo
   - IOB0 to IOB7 are connected to Col 0 to Col 7 of the dot matrix.
   
 - **Controls:**
-  - IOA8: Rotate block
-  - IOA9: Move block left
-  - IOA10: Move block right
+  - IOA8:  Move block right
+  - IOA9:  Move block left
+  - IOA10: Rotate block
   
 Ensure that your hardware connections match the above configuration for the game to work correctly.
 
