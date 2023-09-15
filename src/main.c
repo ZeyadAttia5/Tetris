@@ -7,11 +7,8 @@
 #include "MCAL/NVIC/NVIC_Interface.h"
 #include "HAL/Dot_Matrix/Dot_Matrix_Interface.h"
 #include "APP/Tetris.h"
-// #include <stddef.h>
 
-// #define container_of(ptr, type, member) ({                      \
-//         const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
-//         (type *)( (char *)__mptr - offsetof(type,member) ); })
+
 Tetris game_controller;
 
 extern Tetris game_controller;

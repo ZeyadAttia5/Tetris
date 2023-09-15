@@ -143,6 +143,15 @@ static s8 Tetris_drawShape2(void)
 		break;
 	}
 
+	/* check for boundaries */
+	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
+	{
+		// if the point is out of bounds, return
+		if (new_block->points[row].x >= DOTMAT_MAX_ROWS || new_block->points[row].y >= DOTMAT_MAX_COLS)
+			return OutOfBoundsException;
+	}
+	/* check for boundaries */
+
 	/* check for collision */
 	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
 	{
@@ -326,8 +335,13 @@ void Tetris_UpdateBoard()
 	{
 		if (game_controller.board.buffer[row] == 0xFF)
 		{
+			STK_voidSetBusyWait(2000000);
 			game_controller.board.clrRow(game_controller.board.buffer, row);
 			Tetris_removeActiveBlock();
+			for (u8 remainingRows = row + 1; remainingRows < DOTMAT_MAX_ROWS; remainingRows++)
+			{
+				game_controller.board.buffer[remainingRows - 1] = game_controller.board.buffer[remainingRows];
+			}
 		}
 		else
 		{
