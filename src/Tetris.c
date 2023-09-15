@@ -68,25 +68,25 @@ s8 Tetris_drawShape(u8 copy_u8X, u8 copy_u8Y)
 	switch (new_block.type)
 	{
 	case TETRIS_SHAPE_I:
-		LOC_u8ErrCode = Tetris_draw_I();
+		Tetris_draw_I();
 		break;
 	case TETRIS_SHAPE_O:
-		LOC_u8ErrCode = Tetris_draw_O();
+		Tetris_draw_O();
 		break;
 	case TETRIS_SHAPE_T:
-		LOC_u8ErrCode = Tetris_draw_T();
+		Tetris_draw_T();
 		break;
 	case TETRIS_SHAPE_J:
-		LOC_u8ErrCode = Tetris_draw_J();
+		Tetris_draw_J();
 		break;
 	case TETRIS_SHAPE_L:
-		LOC_u8ErrCode = Tetris_draw_L();
+		Tetris_draw_L();
 		break;
 	case TETRIS_SHAPE_S:
-		LOC_u8ErrCode = Tetris_draw_S();
+		Tetris_draw_S();
 		break;
 	case TETRIS_SHAPE_Z:
-		LOC_u8ErrCode = Tetris_draw_Z();
+		Tetris_draw_Z();
 		break;
 
 	default:
@@ -119,25 +119,25 @@ static s8 Tetris_drawShape2(void)
 	switch (game_controller.active_block.type)
 	{
 	case TETRIS_SHAPE_I:
-		LOC_u8ErrCode = Tetris_draw_I();
+		Tetris_draw_I();
 		break;
 	case TETRIS_SHAPE_O:
-		LOC_u8ErrCode = Tetris_draw_O();
+		Tetris_draw_O();
 		break;
 	case TETRIS_SHAPE_T:
-		LOC_u8ErrCode = Tetris_draw_T();
+		Tetris_draw_T();
 		break;
 	case TETRIS_SHAPE_J:
-		LOC_u8ErrCode = Tetris_draw_J();
+		Tetris_draw_J();
 		break;
 	case TETRIS_SHAPE_L:
-		LOC_u8ErrCode = Tetris_draw_L();
+		Tetris_draw_L();
 		break;
 	case TETRIS_SHAPE_S:
-		LOC_u8ErrCode = Tetris_draw_S();
+		Tetris_draw_S();
 		break;
 	case TETRIS_SHAPE_Z:
-		LOC_u8ErrCode = Tetris_draw_Z();
+		Tetris_draw_Z();
 		break;
 
 	default:
