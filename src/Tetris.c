@@ -2,11 +2,6 @@
 #include "MCAL/EXTI/EXTI_Interface.h"
 #include "MCAL/NVIC/NVIC_Interface.h"
 #include "MCAL/STK/STK_Interface.h"
-// #include <stddef.h>
-
-// #define container_of(ptr, type, member) ({                      \
-//         const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
-//         (type *)( (char *)__mptr - offsetof(type,member) ); })
 
 // four becuase it is TETRis
 #define MAX_PIXELS_PER_BLOCK 4
@@ -31,12 +26,6 @@ static void Tetris_draw_Z();
 s8 Tetris_moveBlockDown();
 s8 Tetris_moveBlockLeft();
 s8 Tetris_moveBlockRight();
-
-/*
-	Bug:
-		When a collision occurs, the pixel should not be cleared
-		but rather stay in its original state
-*/
 
 s8 Tetris_drawShape(u8 copy_u8X, u8 copy_u8Y)
 {
@@ -96,7 +85,7 @@ s8 Tetris_drawShape(u8 copy_u8X, u8 copy_u8Y)
 	/* check for boundaries */
 	for (u8 row = 0; row < MAX_PIXELS_PER_BLOCK; row++)
 	{
-		// if there is already a one in the buffer in that pixel, then collision detected, RETURN
+		// if the point is out of bounds, return
 		if (new_block.points[row].x >= DOTMAT_MAX_ROWS || new_block.points[row].y >= DOTMAT_MAX_COLS)
 			return OutOfBoundsException;
 	}
