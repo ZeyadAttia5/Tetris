@@ -2,9 +2,6 @@
 
 
 
- 
-
-
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -12,8 +9,8 @@
 - [Software Architecture](#software-architecture)
 - [How to Build and Flash](#how-to-build-and-flash)
 - [Controls](#controls)
+- [See It in action!](#see-it-in-action)
 - [License](#license)
-- [See it in action!](https://www.youtube.com/shorts/dhCYXqVE0EU)
 ---
 
 ### Introduction
@@ -68,6 +65,10 @@ Control the Tetris game using the following buttons:
 - **Move Block Right:** IOA8
 - **Move Block Left:** IOA9
 - **Rotate Block:** IOA10
+
+### See It in Action!
+https://github.com/ZeyadAttia5/Tetris/assets/85710632/0f6b8446-41f5-45e6-858a-d689bea5c491
+
 
 ### License
 
