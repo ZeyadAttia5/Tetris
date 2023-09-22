@@ -331,6 +331,7 @@ void Tetris_UpdateBoard()
 		LOC_u16Count = 0;
 		Tetris_moveBlockDown();
 		// matrix_update(game_controller.board, 250);
+
 	}
 
 	// clear full rows
